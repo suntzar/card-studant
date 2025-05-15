@@ -1,0 +1,410 @@
+[
+  {
+    "nomeAluno": "Alícia Endely Pereira Serejo",
+    "responsavel": "Ana Alice Lica Pereira",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Anthonny Levi Araujo Gomes",
+    "responsavel": "Denise Araújo Sousa",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Davi Lucas Costa Frazão",
+    "responsavel": "Cassiele Pinheiro Costa",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Davi Lucas Ribeiro Barbosa",
+    "responsavel": "Drielle Rodrigues Ribeiro",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Ennzo Mhyguel Sá Fonseca",
+    "responsavel": "Marília Luiza Mendes Sá",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Hagi Guilherme dos Santos",
+    "responsavel": "Geovana Ribeiro Reis",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Isabellah Saphyra Macedo Castro",
+    "responsavel": "Valéria Macedo Silva",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Isis Arielly Menezes Sampaio",
+    "responsavel": "Carla Daniela Ferreira Menezes",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Lunna Raphise Serra de Lima",
+    "responsavel": "Patrícia Carneiro Serra",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Lara Helena Silva Gonçalves",
+    "responsavel": "Mirian Silva Novaes",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Luís Benício Cruz Menezes",
+    "responsavel": "Daliane da Silva Cruz Menezes",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Luis Felipe Samenezes Eloi Belfort",
+    "responsavel": "Sthefanny Madallena da Silva Samenezes",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Samira Eloá Mendes dos Santos",
+    "responsavel": "Tamara dos Santos Mendes",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Samuel Carvalho Rabelo",
+    "responsavel": "Aleine Carvalho Silva",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Zaion Luís Silva Soares",
+    "responsavel": "Anna Clea Guimarães Silva",
+    "professora": "Iranilde",
+    "turma": "Creche III - Matutino"
+  },
+  {
+    "nomeAluno": "Alice Costa dos Santos",
+    "responsavel": "Maria da Anunciação Costa",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Arthur Serra Ferreira",
+    "responsavel": "Jaciane Carneiro Serra",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Caio Duarte Everton",
+    "responsavel": "Francyene Matos Duarte",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Clara Sophia Salazar Pereira",
+    "responsavel": "Francisca dos Santos Salazar",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Emilly Beatriz de Jesus Vales",
+    "responsavel": "Valeria Beatriz Silva de Jesus",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Gael Gomes Moreno",
+    "responsavel": "Cleudiane Maria Barbosa Gomes",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Hadassa Saldanha Abreu",
+    "responsavel": "Rosélia Betânia Saldanha Abreu",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Heitor Marques de Oliveira",
+    "responsavel": "Irlanda Fernanda Rios Marques",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Heitor Pereira Duarte",
+    "responsavel": "Soraia Fátima Moreira Pereira",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Ícáro Roberto Costa dos Santos",
+    "responsavel": "Rosimar de Sousa Costa",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Jonas Júnior Miguens Pinheiro",
+    "responsavel": "Soraia de Jesus Miguens de Sousa Pinheiro",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Kemilly Sophia Silva de Carvalho",
+    "responsavel": "Keila Maria Pereira Silva",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Nicolas Daniel Pereira Luna",
+    "responsavel": "Thais Luna dos Santos",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Nicolle Sophia Martins Silva",
+    "responsavel": "Rosilene dos Santos Martins",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Pedro Ataíde de Jesus da Silva Viana",
+    "responsavel": "Conceição de Maria Gomes da Silva",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Samuel Santiago dos Santos",
+    "responsavel": "Mirella Santiago dos Santos",
+    "professora": "Maria Nunes",
+    "turma": "Infantil I - Matutino"
+  },
+  {
+    "nomeAluno": "Acsa Vitória Sampaio Cardoso",
+    "responsavel": "Marileia Aroucha Sampaio",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Aércio Luís Martins Soares Filho",
+    "responsavel": "Anna Clea Guimarães Silva",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Bruna Fernanda Gomes Barbosa",
+    "responsavel": "Aline Fernanda Freitas Gomes",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Débora Castro de Almeida",
+    "responsavel": "Giesa Greisy Lopes Castro",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Gael Youssef Castro Araújo",
+    "responsavel": "Luciêda Leite Castro",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Helize Sousa dos Santos",
+    "responsavel": "Karla Rayane Sousa dos Santos",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Iris Emanuelly Menezes Sampaio",
+    "responsavel": "Carla Daniela Ferreira Menezes",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "João Gabriel Araújo Pereira",
+    "responsavel": "Oclesia Alves de Araujo",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Jonathan Veloso Morais",
+    "responsavel": "Elizangela Silva Veloso",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Lais Cândida Diniz Silva",
+    "responsavel": "Francisca Rosa Marques Diniz",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Luis Miguel Carvalho Mendonça Ferreira",
+    "responsavel": "Enasio Ferreira", 
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Pedro Lucca do Nascimento Rocha",
+    "responsavel": "Aleksandra dos Anjos do Nascimento",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Rubens de Jesus Silva Costa",
+    "responsavel": "Thays Cristina Ferreira da Silva",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Thayla Sophia Santos de Sousa",
+    "responsavel": "Tainara Santos Pereira",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Ycaro Gabriel Marreiros Viana",
+    "responsavel": "Daylane da Silva Marreiros Vieira",
+    "professora": "Halysson",
+    "turma": "Infantil II - Matutino"
+  },
+  {
+    "nomeAluno": "Aghata Emanuelly Serra Costa",
+    "responsavel": "Cristiane Carneiro Serra",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Aghatha Valentina Pereira Rodrigues",
+    "responsavel": "Yasmin Rodrigues Ribeiro",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Arthur Alejandro Viegas Nina",
+    "responsavel": "Anne Carine Silva Viegas",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Arthur Eduardo Santos Ferreira",
+    "responsavel": "Maiandra da Silva Santos",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Aylla Emanuelle da Silva Malheiros",
+    "responsavel": "Ellayne Fernanda Silva da Silva",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Benjamim Lukas de Paula Santos",
+    "responsavel": "Martha Joyce de Paula Romão",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Benjamin Moreira Alves",
+    "responsavel": "Patrícia Sampaio Moreirsa",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Davi Guilherme França Viana",
+    "responsavel": "Neidinaura França",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Gustavo Costa Silva",
+    "responsavel": "Rosana da Costa Silva",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Hyanara Vitória Reis Silva",
+    "responsavel": "Suely da Silva Reis",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "João Guilherme da Silva Martins",
+    "responsavel": "Laryssa Stephanne da Silva Borges",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "José Denilson de Sousa Silva",
+    "responsavel": "Auricleia de Sousa Silva",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Kemilly de Moraes Rocha",
+    "responsavel": "Jossâmia pereira de Moraes Rocha",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Maria Heloisa Dutra Evangelista",
+    "responsavel": "Angra Cristina dos Santos Dutra",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Maria Júlia Mendes Trindade",
+    "responsavel": "Giselle Ramos Mendes",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Maria Luiza Marques de Oliveira",
+    "responsavel": "Irlanda Fernanda Rios Marques",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Miguel Magalhães Furtado do Nascimento",
+    "responsavel": "Evelyn Magalhães Ferreira",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Paulo Arthur Oliveira Guimarães",
+    "responsavel": "Joviana Evangelista de Oliveira",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Pedro Miguel Souza da Silva",
+    "responsavel": "Cleidiane Souza Alves",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Pedro Samuel Silva Moraes",
+    "responsavel": "Taynara Alves da Silva",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Poliana Gomes de Franco",
+    "responsavel": "Cassandra Gomes Lindoso",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  },
+  {
+    "nomeAluno": "Vithor Hugo Soledade Gonçalves",
+    "responsavel": "Antonira Soledade",
+    "professora": "Lídia",
+    "turma": "1º Ano - Matutino"
+  }
+]
