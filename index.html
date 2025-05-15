@@ -1,223 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <title>Cartões Escolares - Estilo Anterior (Dados Unificados)</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
-    <style>
-        :root {
-            --cartao-largura-base: 86mm;
-            --cartao-altura-base: 54mm; /* Altura original deste design */
-            --fator-escala-visual: 1.03;
-
-            --cor-cabecalho-fundo: #3351e0;
-            --cor-cabecalho-texto: #fff;
-            --cor-foto-fundo: #f4b544; /* Para placeholder da foto 23x23mm */
-            --cor-foto-texto: #fff;
-            --cor-info-texto: #333;
-            --cor-rodape-base-fundo: #3aa44a; /* Verde do rodapé */
-            --cor-rodape-info-texto: #fff;
-            --cor-rodape-dir-slogan: #555; /* Se o slogan for usado */
-            --cor-cartao-fundo: #fff;
-            --cor-borda-corte: #777;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #e4e1d8;
-            padding: 20px 0;
-            font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .pagina-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .pagina {
-            background-color: white;
-            width: 210mm;
-            min-height: 297mm;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            align-content: flex-start;
-
-            padding: 12mm;
-            /* Gaps para cartões 86x54mm com escala 1.03 */
-            /* Largura Visual: 86 * 1.03 = 88.58mm */
-            /* Altura Visual: 54 * 1.03 = 55.62mm */
-            column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
-            /* (210 - 24 - 177.16) = 8.84mm */
-            row-gap: calc((297mm - 2*12mm - 5*(var(--cartao-altura-base) * var(--fator-escala-visual))) / 4); /* Para 5 linhas */
-            /* (297 - 24 - 5 * 55.62) = (273 - 278.1) / 4 = negativo. Isso significa que 5 linhas não cabem com este gap.
-               Vamos ajustar para 4 linhas, o que dá um gap maior.
-               (297 - 24 - 4 * 55.62) / 3 = (273 - 222.48) / 3 = 50.52 / 3 = ~16.8mm
-               Ou um valor fixo. Como no seu CSS original: row-gap: 15mm;
-            */
-            row-gap: 15mm; /* Do seu CSS original */
-
-
-            align-items: start;
-            justify-items: center;
-        }
-
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
-        @media print {
-            body {
-                background-color: white; padding: 0; margin: 0;
-                -webkit-print-color-adjust: exact; print-color-adjust: exact;
-            }
-            .pagina-container { gap: 0; }
-            .pagina {
-                margin: 0; box-shadow: none; width: 210mm;
-                height: auto; min-height: 0; padding: 12mm;
-                overflow: visible !important;
-            }
-            .no-print { display: none !important; }
-            .espacador-quebra-pagina {
-                height: 0 !important; margin: 0 !important;
-                padding: 0 !important; border: none !important;
-            }
-            .cartao {
-                box-shadow: none !important;
-                border: 0.5pt dashed var(--cor-borda-corte) !important;
-            }
-        }
-
-        .cartao {
-            width: var(--cartao-largura-base);
-            height: var(--cartao-altura-base);
-            transform: scale(var(--fator-escala-visual));
-            transform-origin: center center;
-            border-radius: 5mm;
-            border: 0.5pt dashed #aaa; /* Borda para tela */
-            background: var(--cor-cartao-fundo);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            page-break-inside: avoid !important;
-        }
-
-        .cartao-cabecalho {
-            background-color: var(--cor-cabecalho-fundo);
-            padding: 3mm;
-            color: var(--cor-cabecalho-texto);
-            text-align: center;
-            font-size: 9.5pt;
-            font-weight: 700;
-            flex-shrink: 0;
-            z-index: 1; /* Alterado de volta do seu CSS, mas logo pode precisar de z-index maior */
-        }
-
-        .cartao-corpo {
-            display: flex;
-            padding: 3mm;
-            flex-grow: 1;
-            z-index: 0; /* Para ficar abaixo do logo se sobrepor */
-        }
-
-        .cartao-foto-container { /* Foto quadrada */
-            flex: 0 0 23mm;
-            height: 23mm;
-            background-color: var(--cor-foto-fundo);
-            border-radius: 2.5mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--cor-foto-texto);
-            font-size: 8.5pt;
-            font-weight: 700;
-            margin-right: 4mm;
-            flex-shrink: 0;
-        }
-
-        .cartao-info { /* Nome e Responsável ao lado da foto */
-            flex: 1;
-            color: var(--cor-info-texto);
-            font-size: 7.5pt;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centraliza verticalmente Nome e Responsável */
-            font-weight: 400;
-        }
-        .cartao-info p {
-            margin-bottom: 1mm;
-            line-height: 1.3;
-        }
-        .cartao-info strong {
-            font-weight: 700;
-        }
-
-        .cartao-rodape-base { /* Rodapé verde com Professor/Turma */
-            width: 45mm; /* Largura fixa como no seu CSS */
-            background-color: var(--cor-rodape-base-fundo);
-            color: var(--cor-rodape-info-texto);
-            padding: 4mm;
-            flex-shrink: 0;
-            position: relative; /* Para contexto do logo, se o logo fosse filho dele */
-            z-index: 0; /* Abaixo do logo flutuante */
-            border-radius: 0 5mm 0 0; /* Canto superior direito arredondado */
-        }
-
-        .rodape-info-professor { /* Texto dentro do rodapé verde */
-            font-size: 7.5pt;
-            font-weight: 400;
-            line-height: 1.3;
-        }
-        .rodape-info-professor strong {
-            font-weight: 700;
-        }
-
-        .rodape-logo-flutuante { /* Logo flutuante */
-            position: absolute;
-            bottom: 3mm;
-            right: 4mm;
-            z-index: 1; /* Acima do rodapé verde e do corpo */
-        }
-        .rodape-logo-flutuante img {
-            max-width: 20mm; /* Do seu CSS original */
-            max-height: 14mm;/* Do seu CSS original */
-            height: auto;
-            display: block;
-        }
-        /* Se o slogan for usado
-        .rodape-logo-flutuante .slogan {
-            font-size: 6pt;
-            color: var(--cor-rodape-dir-slogan);
-            margin-top: 0.5mm;
-            text-align: right;
-            font-weight: 400;
-        }
-        */
-
-        .espacador-quebra-pagina {
-            grid-column: 1 / -1;
-            height: 1px;
-            page-break-before: always !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Cartões Escolares - Organização de Dados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* CSS permanece o mesmo da última versão fornecida */
+    :root {
+        --cartao-largura-base: 86mm;
+        --cartao-altura-base: 54mm;
+        --fator-escala-visual: 1.03;
+        --cor-cabecalho-fundo: #3351e0;
+        --cor-cabecalho-texto: #fff;
+        --cor-foto-fundo: #f4b544;
+        --cor-foto-texto: #fff;
+        --cor-info-texto: #333;
+        --cor-rodape-base-fundo: #3aa44a;
+        --cor-rodape-info-texto: #fff;
+        --cor-rodape-dir-slogan: #555;
+        --cor-cartao-fundo: #fff;
+        --cor-borda-corte: #777;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: #e4e1d8; padding: 20px 0; font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    .pagina-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .pagina {
+        background-color: white; width: 210mm; min-height: 297mm;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); position: relative;
+        display: grid; grid-template-columns: repeat(2, 1fr);
+        align-content: flex-start; padding: 12mm;
+        column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
+        row-gap: 15mm; align-items: start; justify-items: center;
+    }
+    @page { size: A4; margin: 0; }
+    @media print {
+        body { background-color: white; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .pagina-container { gap: 0; }
+        .pagina { margin: 0; box-shadow: none; width: 210mm; height: auto; min-height: 0; padding: 12mm; overflow: visible !important; }
+        .no-print { display: none !important; }
+        .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+        .cartao { box-shadow: none !important; border: 0.5pt dashed var(--cor-borda-corte) !important;}
+    }
+    .cartao {
+      width: var(--cartao-largura-base); height: var(--cartao-altura-base);
+      transform: scale(var(--fator-escala-visual)); transform-origin: center center;
+      border-radius: 5mm; border: 0.5pt dashed #aaa;
+      background: var(--cor-cartao-fundo); overflow: hidden;
+      display: flex; flex-direction: column; position: relative;
+      page-break-inside: avoid !important;
+    }
+    .cartao-cabecalho {
+      background-color: var(--cor-cabecalho-fundo); padding: 3mm;
+      color: var(--cor-cabecalho-texto); text-align: center; font-size: 9.5pt;
+      font-weight: 700; flex-shrink: 0; z-index: 1;
+    }
+    .cartao-corpo { display: flex; padding: 3mm; flex-grow: 1; z-index: 0; }
+    .cartao-foto-container {
+      flex: 0 0 23mm; height: 23mm; background-color: var(--cor-foto-fundo);
+      border-radius: 2.5mm; display: flex; align-items: center; justify-content: center;
+      color: var(--cor-foto-texto); font-size: 8.5pt; font-weight: 700;
+      margin-right: 4mm; flex-shrink: 0;
+    }
+    .cartao-info {
+      flex: 1; color: var(--cor-info-texto); font-size: 7.5pt;
+      display: flex; flex-direction: column; justify-content: center; font-weight: 400;
+    }
+    .cartao-info p { margin-bottom: 1mm; line-height: 1.3; }
+    .cartao-info strong { font-weight: 700; }
+    .cartao-rodape-base {
+      width: 45mm; background-color: var(--cor-rodape-base-fundo);
+      color: var(--cor-rodape-info-texto); padding: 4mm; flex-shrink: 0;
+      position: relative; z-index: 0; border-radius: 0 5mm 0 0;
+    }
+    .rodape-info-professor { font-size: 7.5pt; font-weight: 400; line-height: 1.3; }
+    .rodape-info-professor strong { font-weight: 700; }
+    .rodape-logo-flutuante { position: absolute; bottom: 3mm; right: 4mm; z-index: 1; }
+    .rodape-logo-flutuante img { max-width: 20mm; max-height: 14mm; height: auto; display: block; }
+    .espacador-quebra-pagina { grid-column: 1 / -1; height: 1px; page-break-before: always !important; }
+  </style>
 </head>
 <body>
-  <button onclick="window.print()" class="no-print" style="position: fixed; top: 10px; left: 10px; padding: 10px; z-index: 1000">Exportar para PDF / Imprimir</button>
+  <button onclick="window.print()" class="no-print" style="position: fixed; top: 10px; left: 10px; padding: 10px; z-index: 1000;">Exportar para PDF / Imprimir</button>
   <button id="limparDados" class="no-print" style="position: fixed; top: 50px; left: 10px; padding: 10px; z-index: 1000; background-color: #f44336; color: white; border: none;">
     Limpar Dados Locais e Recarregar
+  </button>
+  <button id="organizarDados" class="no-print" style="position: fixed; top: 90px; left: 10px; padding: 10px; z-index: 1000; background-color: #4CAF50; color: white; border: none;">
+    Organizar Dados dos Alunos
   </button>
 
   <div class="pagina-container">
@@ -226,29 +96,94 @@
     </div>
   </div>
 
-  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
+  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.3); font-size: 12px; max-width: 300px; z-index: 1001;">
       <strong>Instruções para Exportar/Imprimir...</strong>
-      <p>Os dados são carregados dos arquivos JSON e salvos localmente.</p>
+      <p>Os dados dos alunos são carregados e salvos localmente.</p>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const containerPagina = document.getElementById("paginaCartoes");
-        const caminhoArquivoMat = "dados_alunos_mat.json";
-        const caminhoArquivoVesp = "dados_alunos_vesp.json"; // Assumindo que o JSON vespertino se chama assim
+    document.addEventListener('DOMContentLoaded', function() {
+        const containerPagina = document.getElementById('paginaCartoes');
+        const caminhoArquivoMat = 'dados_alunos_mat.json';
+        const caminhoArquivoVesp = 'dados_alunos_vesp.json';
         const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
-        const cartoesPorQuebraVisual = 8; // 4 linhas de 2 cartões de 54mm (+escala) devem caber com bom gap
+        const cartoesPorQuebraVisual = 8;
 
         const btnLimparDados = document.getElementById('limparDados');
+        const btnOrganizarDados = document.getElementById('organizarDados');
+
         if(btnLimparDados) {
             btnLimparDados.addEventListener('click', function() {
                 localStorage.removeItem(chaveLocalStorage);
-                alert('Dados locais limpos. A página será recarregada.');
+                alert('Dados locais limpos. A página será recarregada para buscar os arquivos JSON originais.');
                 window.location.reload();
             });
         }
 
-        // A função criarCartaoHTML é exatamente a que você forneceu na sua última mensagem
+        if(btnOrganizarDados) {
+            btnOrganizarDados.addEventListener('click', async function() { // Tornar async para carregar se necessário
+                let dadosAtuais = obterDadosAtuais();
+                if (!dadosAtuais || dadosAtuais.length === 0) {
+                    alert("Nenhum dado para organizar. Carregando dados primeiro...");
+                    await carregarDadosDosArquivos(); // Tenta carregar se não houver nada
+                    dadosAtuais = obterDadosAtuais();
+                    if (!dadosAtuais || dadosAtuais.length === 0) {
+                        alert("Ainda não há dados para organizar após tentativa de recarga.");
+                        return;
+                    }
+                }
+
+                const dadosOrganizados = organizarDados(dadosAtuais);
+                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosOrganizados));
+                renderizarCartoes(dadosOrganizados);
+                alert('Dados organizados e salvos localmente!');
+            });
+        }
+
+        function obterDadosAtuais() {
+            const dadosSalvos = localStorage.getItem(chaveLocalStorage);
+            if (dadosSalvos) {
+                try {
+                    return JSON.parse(dadosSalvos);
+                } catch (e) {
+                    console.error("Erro ao parsear dados do localStorage ao organizar:", e);
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        function definirOrdemTurma(turmaNome) {
+            const nomeTurmaLower = turmaNome.toLowerCase();
+            if (nomeTurmaLower.includes("creche iii")) return 1;
+            if (nomeTurmaLower.includes("infantil i")) return 2; // Mesmo que seja "Infantil I I"
+            if (nomeTurmaLower.includes("infantil ii")) return 3;
+            if (nomeTurmaLower.includes("1° ano") || nomeTurmaLower.includes("1º ano")) return 4;
+            return 5; // Outras turmas, se houver
+        }
+
+        function organizarDados(dados) {
+            return dados.sort((a, b) => {
+                // 1. Ordenar por Turno (Matutino primeiro)
+                const turnoA = a.turma.toLowerCase().includes("matutino") ? 1 : 2;
+                const turnoB = b.turma.toLowerCase().includes("matutino") ? 1 : 2;
+                if (turnoA !== turnoB) {
+                    return turnoA - turnoB;
+                }
+
+                // 2. Ordenar por Turma (Creche III, Infantil I, Infantil II, 1° Ano)
+                const ordemTurmaA = definirOrdemTurma(a.turma);
+                const ordemTurmaB = definirOrdemTurma(b.turma);
+                if (ordemTurmaA !== ordemTurmaB) {
+                    return ordemTurmaA - ordemTurmaB;
+                }
+
+                // 3. Ordenar por Nome do Aluno (Alfabética)
+                return a.nomeAluno.localeCompare(b.nomeAluno, 'pt-BR', { sensitivity: 'base' });
+            });
+        }
+
+
         function criarCartaoHTML(aluno) {
             const escapeHTML = str => {
                 if (typeof str !== "string") return str;
@@ -256,28 +191,23 @@
                 div.textContent = str;
                 return div.innerHTML;
             };
-
             return `
                 <div class="cartao">
-                    <div class="cartao-cabecalho">
-                        E. M. ANA MARIA CORDEIRO DE SOUSA
-                    </div>
+                    <div class="cartao-cabecalho"> E. M. ANA MARIA CORDEIRO DE SOUSA </div>
                     <div class="cartao-corpo">
-                        <div class="cartao-foto-container"> <!-- Foto 23x23mm -->
-                        FOTO
-                        </div>
-                        <div class="cartao-info"> <!-- Nome e Responsável -->
+                        <div class="cartao-foto-container"> FOTO </div>
+                        <div class="cartao-info">
                             <p><strong>Nome:</strong> ${escapeHTML(aluno.nomeAluno)}</p>
                             <p><strong>Responsável:</strong> ${escapeHTML(aluno.responsavel)}</p>
                         </div>
                     </div>
-                    <div class="cartao-rodape-base"> <!-- Rodapé verde com Professor/Turma -->
+                    <div class="cartao-rodape-base">
                         <div class="rodape-info-professor">
                             <strong>Professora:</strong> ${escapeHTML(aluno.professora)}<br>
                             <strong>Turma:</strong> ${escapeHTML(aluno.turma)}
                         </div>
                     </div>
-                    <div class="rodape-logo-flutuante"> <!-- Logo flutuante -->
+                    <div class="rodape-logo-flutuante">
                         <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
                     </div>
                 </div>
@@ -304,6 +234,46 @@
             }
         }
 
+        async function carregarDadosDosArquivos() {
+            console.log("Tentando carregar dados dos arquivos JSON.");
+            try {
+                const [respostaMat, respostaVesp] = await Promise.all([
+                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede mat.', error: e })),
+                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede vesp.', error: e }))
+                ]);
+
+                let dadosMat = [];
+                let dadosVesp = [];
+
+                if (respostaMat.ok) {
+                    dadosMat = await respostaMat.json();
+                } else {
+                    console.error(`Erro ao carregar ${caminhoArquivoMat}: ${respostaMat.status} ${respostaMat.statusText}`, respostaMat.error || '');
+                }
+
+                if (respostaVesp.ok) {
+                    dadosVesp = await respostaVesp.json();
+                } else {
+                    console.error(`Erro ao carregar ${caminhoArquivoVesp}: ${respostaVesp.status} ${respostaVesp.statusText}`, respostaVesp.error || '');
+                }
+                
+                if (dadosMat.length === 0 && dadosVesp.length === 0) {
+                    throw new Error("Nenhum dado pode ser carregado dos arquivos JSON.");
+                }
+
+                const dadosUnificados = [...dadosMat, ...dadosVesp];
+                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosUnificados));
+                console.log("Dados unificados dos arquivos salvos no localStorage.");
+                return dadosUnificados; // Retorna os dados carregados
+
+            } catch (error) {
+                console.error("Erro final ao carregar ou processar os arquivos JSON:", error);
+                if(containerPagina) containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
+                return null; // Retorna null em caso de erro
+            }
+        }
+
+
         async function carregarDadosIniciais() {
             if (!containerPagina) {
                 console.error("Elemento 'paginaCartoes' não encontrado.");
@@ -311,56 +281,25 @@
                 return;
             }
 
-            const dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
-            if (dadosSalvosLocalmente) {
+            let dadosParaRenderizar = obterDadosAtuais();
+
+            if (dadosParaRenderizar) {
                 console.log("Carregando dados do localStorage.");
-                try {
-                    const dadosParseados = JSON.parse(dadosSalvosLocalmente);
-                    renderizarCartoes(dadosParseados);
-                    return;
-                } catch(e) {
-                    console.error("Erro ao parsear dados do localStorage:", e);
-                    localStorage.removeItem(chaveLocalStorage);
-                }
+            } else {
+                console.log("Nenhum dado no localStorage. Carregando dos arquivos JSON...");
+                dadosParaRenderizar = await carregarDadosDosArquivos();
             }
-
-            console.log("Carregando dados dos arquivos JSON.");
-            try {
-                const [respostaMat, respostaVesp] = await Promise.all([
-                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, status: 'FETCH_MAT_ERROR', error: e })),
-                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, status: 'FETCH_VESP_ERROR', error: e }))
-                ]);
-
-                let dadosMat = [];
-                let dadosVesp = [];
-
-                if (respostaMat.ok) { dadosMat = await respostaMat.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoMat}:`, respostaMat.status, respostaMat.error || ''); }
-
-                if (respostaVesp.ok) { dadosVesp = await respostaVesp.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoVesp}:`, respostaVesp.status, respostaVesp.error || ''); }
-                
-                if (dadosMat.length === 0 && dadosVesp.length === 0 && !dadosSalvosLocalmente) { // Só mostra erro se realmente não carregou nada e não tinha local
-                    throw new Error("Nenhum dado pode ser carregado dos arquivos JSON e não há dados locais.");
-                }
-
-                const dadosUnificados = [...dadosMat, ...dadosVesp];
-                if (dadosUnificados.length > 0) { // Só salva se houver dados para salvar
-                    localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosUnificados));
-                    console.log("Dados unificados salvos no localStorage.");
-                    renderizarCartoes(dadosUnificados);
-                } else if (!dadosSalvosLocalmente) { // Se não carregou nada e não tinha local
-                     containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
-                }
-
-
-            } catch (error) {
-                console.error("Erro final ao carregar ou processar os arquivos JSON:", error);
-                if (!dadosSalvosLocalmente) { // Evita sobrescrever a mensagem de erro se os dados locais não puderam ser parseados
-                    containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
+            
+            if(dadosParaRenderizar) {
+                renderizarCartoes(dadosParaRenderizar);
+            } else {
+                 // Mensagem de erro já deve ter sido exibida por carregarDadosDosArquivos ou obterDadosAtuais (se parse falhou)
+                if (!containerPagina.innerHTML.includes('Falha')) { // Evita duplicar msg de erro
+                    containerPagina.innerHTML = `<p style="text-align: center; padding: 20px;">Não foi possível carregar os dados dos alunos.</p>`;
                 }
             }
         }
+
         carregarDadosIniciais();
     });
   </script>
