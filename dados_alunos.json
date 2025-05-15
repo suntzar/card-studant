@@ -1,0 +1,356 @@
+[
+  {
+    "nomeAluno": "Antônio Gabriel Lopes",
+    "responsavel": "Denise Alves Lopes",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Aylla Beatriz Paz",
+    "responsavel": "Deyse Delgado Paz",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Christopher Alex Ferreira da Silva",
+    "responsavel": "Eliziane Ferreira da Sialva",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Heitor Felipe Pinheiro Cardoso",
+    "responsavel": "Taynara da Silva Cardoso",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Lucas Matheus Santos e Santos",
+    "responsavel": "Alessandra Paloma dos Santos",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Luiza Hinata Aguiar Souza",
+    "responsavel": "Kessia Aguiar Silva",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Noah Pietro Pereira Araújo",
+    "responsavel": "Francimaire dos Santos Pereira",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Sarah Moraes Diniz",
+    "responsavel": "Meryllin Cristine da Luz Moraes Diniz",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Sophia Loren Nogueira Menezes",
+    "responsavel": "Emanuelli Nogueira Silva",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Thamara Jasmyne Amaral Matos",
+    "responsavel": "Samya Cristina da Silva Amaral",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Thaylla Sophia Moraes Aguiar",
+    "responsavel": "Talia Louzeiro Moraes",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Theo Henrique de Ataíde Rabello",
+    "responsavel": "Raíssa Oliveira de Ataíde",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Vitor Lucas de Brito Ferreira",
+    "responsavel": "Iziane Silva de Brito",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Yan Victor da Silva Sousa",
+    "responsavel": "Maria Luziane Miranda da Silva",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Yanne Melissa Armendariz Fonseca",
+    "responsavel": "Maysa Emiliana dos Santos Armendariz",
+    "professora": "Vanessa",
+    "turma": "Creche III - Vespertino"
+  },
+  {
+    "nomeAluno": "Bella Cristina Serra Soares",
+    "responsavel": "Ariana de Jesus Serra Soares",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Davi dos Santos Oliveira",
+    "responsavel": "Maria de Jesus Vieira dos Santos",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Eduardo Daniel Rocha Nogueira",
+    "responsavel": "Ana Claudia Sousa Rocha",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Edson Junior Silva Sousa",
+    "responsavel": "Nailsa Reis Silva",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Eloah Silva Mendonça",
+    "responsavel": "Bianca Pinheiro Silva",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Gilvan Guilherme Silva Rabelo",
+    "responsavel": "Gabriela Lima Silva",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Letícia de Morais Castro",
+    "responsavel": "Djanira Sousa de Morais",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Luna Santos de Jesus",
+    "responsavel": "Andreia Mendes Santos",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Manuella Lopes Silva Miranda",
+    "responsavel": "Anne Caroline Lopes Silva Miranda",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Maria Laura Soares Santos",
+    "responsavel": "Amanda de Jesus Serra Santos",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Pedro Henrique Oliveira dos Santos",
+    "responsavel": "Jucinara Cristina Alves Oliveira",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Pietro Kauã Oliveira Silva",
+    "responsavel": "Jainara França Oliveira",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Rebeca Ohanna de Castro Barros",
+    "responsavel": "Bruna Fontes de Castro",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Rui Guilherme Carvalho de Jesus Silva",
+    "responsavel": "Emanuely silva de Carvalho",
+    "professora": "Linda",
+    "turma": "Infantil I - Vespertino"
+  },
+  {
+    "nomeAluno": "Arthur Hazael San5tos França",
+    "responsavel": "Amanda Santos França",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Brayan Dominic Gomes Aguiar",
+    "responsavel": "Nagila dos Santos Alves Gomes",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Davi Luis Oliveira de Jesus",
+    "responsavel": "Lidiane Silva Oliveira",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Evelyn Beatriz dos Santos Ribeiro",
+    "responsavel": "Brenda do Vale Santos",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Iza Moana Aguiar Menezes",
+    "responsavel": "Raquel dos Passos Aguiar",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Karlos Antonio Lima Oliveira",
+    "responsavel": "Ozana Teodora Lima",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Jessé Carlos Lindoso Souza",
+    "responsavel": "Nadja Rayanne Froz",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Júlia Sophia Alves Cidrini",
+    "responsavel": "Rayanne Alves Soares",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Maria Alice Silva dos Santos",
+    "responsavel": "Joelma da Luz Santos",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Maria Emanuelly da Silva Diniz",
+    "responsavel": "Maria da Conceição Santos da Silva",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Micaela Ferreira Matos",
+    "responsavel": "Joisiara da Luz Ferreira",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Moises Jesus de Moraes",
+    "responsavel": "Moizana Jesus da Silva",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Olívia Aguiar Souza",
+    "responsavel": "Kessia Aguiar Silva",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Rebeca Lopes Pavão",
+    "responsavel": "Luciana de Jesus Martins Lopes Pavão",
+    "professora": "Elem",
+    "turma": "Infantil II - Vespertino"
+  },
+  {
+    "nomeAluno": "Agatha Rebeca de Paula Santos",
+    "responsavel": "Martha Joyce de Paula Romão",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Clecio Levy Santos Ramos",
+    "responsavel": "Gisele Maria Sousa Santos",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Enzo Gabriel Rubim Sá Menezes",
+    "responsavel": "Luzimaria Rubim Piedade",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Daniely Sophia Pinheiro",
+    "responsavel": "Adriana Santos Alves Pinheiro",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Ericka Vitoria Barbosa da Silva",
+    "responsavel": "Ana Karine Barbosa Amorim",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Gabriel Jesus Mendes dos Santos",
+    "responsavel": "Tamara dos Santos Mendes",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Icaro Diogo da Silva Sousa",
+    "responsavel": "Maria Luziane Miranda da Silva",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Juliana Castelo Branco Araújo Pinheiro",
+    "responsavel": "Benedita Fernanda Castelo Branco Araújo Pinheiro",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "José Gustavo Marley de Jesus Sousa",
+    "responsavel": "Erica Marly de Jesus Sousa",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Kaua Victor Lindoso Caldas",
+    "responsavel": "Priscyla Harrison Lindoso Caldas Dutra",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Lucas Manoel Ramos Nascimento",
+    "responsavel": "Gilmara Ramos de Deus",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Nathércia Madeira dos Santos",
+    "responsavel": "Natalia Pinto Madeira",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Paulo Sergio Santos",
+    "responsavel": "Ana Sergia Santos e Santos",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Pérola Ferreira da Silva",
+    "responsavel": "Luana Ferreira da Silva",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Stefhanny Lorrany Silva Pereira",
+    "responsavel": "Joselma de Matos Silva",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  },
+  {
+    "nomeAluno": "Valentina Beatriz da Silva Araújo",
+    "responsavel": "Byanca Darlen Santos da Silva",
+    "professora": "Vania",
+    "turma": "1º Ano - Vespertino"
+  }
+]

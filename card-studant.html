@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Cartões Escolares Dinâmicos - A4</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+        <style>
+            :root {
+                --cartao-largura-base: 86mm;
+                --cartao-altura-base: 54mm;
+                --fator-escala-visual: 1.03;
+
+                --cor-cabecalho-fundo: #3351e0;
+                --cor-cabecalho-texto: #fff;
+                --cor-foto-fundo: #f4b544;
+                --cor-foto-texto: #fff;
+                --cor-info-texto: #333;
+                --cor-rodape-base-fundo: #3aa44a;
+                --cor-rodape-info-texto: #fff;
+                --cor-rodape-dir-slogan: #555;
+                --cor-cartao-fundo: #fff;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background-color: #e4e1d8;
+                padding: 20px 0;
+                font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            .pagina-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .pagina {
+                background-color: white;
+                width: 210mm;
+                min-height: 297mm;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+                box-sizing: border-box;
+                position: relative;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                align-content: flex-start;
+
+                padding: 12mm;
+                column-gap: 8.8mm;
+                row-gap: 15mm;
+
+                align-items: start;
+                justify-items: center;
+            }
+
+            @page {
+                size: A4;
+                margin: 0;
+            }
+
+            @media print {
+                body {
+                    background-color: white;
+                    padding: 0;
+                    margin: 0;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .pagina-container {
+                    gap: 0;
+                }
+                .pagina {
+                    margin: 0;
+                    box-shadow: none;
+                    width: 210mm;
+                    height: auto;
+                    min-height: 0;
+                    padding: 12mm;
+                    overflow: visible !important;
+                }
+                .no-print {
+                    display: none !important;
+                }
+                .espacador-quebra-pagina {
+                    height: 0 !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    border: none !important;
+                }
+                .cartao {
+                    /* Borda para corte na impressão */
+                    box-shadow: none;
+                    border: 0.5pt dashed #777 !important;
+                }
+            }
+
+            .cartao {
+                width: var(--cartao-largura-base);
+                height: var(--cartao-altura-base);
+                transform: scale(var(--fator-escala-visual));
+                transform-origin: center center;
+                border-radius: 5mm;
+                /* box-shadow: 0 1mm 3mm rgba(0, 0, 0, 0.1); REMOVIDO */
+                border: 0.5pt dashed #aaa; /* Borda tracejada para visualização em tela */
+                background: var(--cor-cartao-fundo);
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                page-break-inside: avoid !important;
+            }
+
+            .cartao-cabecalho {
+                background-color: var(--cor-cabecalho-fundo);
+                padding: 3mm;
+                color: var(--cor-cabecalho-texto);
+                text-align: center;
+                font-size: 9.5pt;
+                font-weight: 700;
+                flex-shrink: 0;
+                z-index: 1;
+            }
+
+            .cartao-corpo {
+                display: flex;
+                padding: 3mm;
+                flex-grow: 1;
+                z-index: 1;
+            }
+
+            .cartao-foto-container {
+                flex: 0 0 23mm;
+                height: 23mm;
+                background-color: var(--cor-foto-fundo);
+                border-radius: 2.5mm;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--cor-foto-texto);
+                font-size: 8.5pt;
+                font-weight: 700;
+                margin-right: 4mm;
+                flex-shrink: 0;
+            }
+
+            .cartao-info {
+                flex: 1;
+                color: var(--cor-info-texto);
+                font-size: 7.5pt;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                font-weight: 400;
+            }
+            .cartao-info p {
+                margin-bottom: 1mm;
+                line-height: 1.3;
+            }
+            .cartao-info strong {
+                font-weight: 700;
+            }
+
+            .cartao-rodape-base {
+                width: 45mm;
+                background-color: var(--cor-rodape-base-fundo);
+                color: var(--cor-rodape-info-texto);
+                padding: 4mm;
+                flex-shrink: 0;
+                position: relative;
+                z-index: 0;
+                border-radius: 0 5mm 0 0;
+            }
+
+            .rodape-info-professor {
+                font-size: 7.5pt;
+                font-weight: 400;
+                line-height: 1.3;
+            }
+            .rodape-info-professor strong {
+                font-weight: 700;
+            }
+
+            .rodape-logo-flutuante {
+                position: absolute;
+                bottom: 3mm;
+                right: 4mm;
+                z-index: 1;
+            }
+            .rodape-logo-flutuante img {
+                max-width: 20mm;
+                max-height: 14mm;
+                height: auto;
+                display: block;
+            }
+            .rodape-logo-flutuante .slogan {
+                font-size: 6pt;
+                color: var(--cor-rodape-dir-slogan);
+                margin-top: 0.5mm;
+                text-align: right;
+                font-weight: 400;
+            }
+
+            .espacador-quebra-pagina {
+                grid-column: 1 / -1;
+                height: 1px;
+                page-break-before: always !important;
+            }
+        </style>
+    </head>
+    <body>
+        <button onclick="window.print()" class="no-print" style="position: fixed; top: 10px; left: 10px; padding: 10px; z-index: 1000">Exportar para PDF / Imprimir</button>
+
+        <div class="pagina-container">
+            <div class="pagina" id="paginaCartoes">
+                <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+            </div>
+        </div>
+
+        <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
+            <strong>Instruções para Exportar/Imprimir:</strong>
+            <ol>
+                <li>Verifique se todos os cartões foram gerados.</li>
+                <li>Use o botão "Exportar para PDF / Imprimir" ou Ctrl+P.</li>
+                <li>
+                    No diálogo de impressão:
+                    <ul>
+                        <li><strong>Destino:</strong> "Salvar como PDF".</li>
+                        <li><strong>Tamanho do Papel:</strong> "A4".</li>
+                        <li><strong>Margens:</strong> "Nenhuma".</li>
+                        <li><strong>Escala:</strong> **CRUCIAL: "Padrão" ou "100%"**.</li>
+                        <li><strong>Opções:</strong> Marque "Imprimir fundos".</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const containerPagina = document.getElementById("paginaCartoes");
+                const caminhoArquivoJSON = "dados_alunos.json"; // Certifique-se que este arquivo existe e está acessível
+                const cartoesPorQuebraVisual = 8;
+
+                function criarCartaoHTML(aluno) {
+                    const escapeHTML = str => {
+                        if (typeof str !== "string") return str;
+                        const div = document.createElement("div");
+                        div.textContent = str;
+                        return div.innerHTML;
+                    };
+
+                    return `
+            <div class="cartao">
+            <div class="cartao-cabecalho">
+                E. M. ANA MARIA CORDEIRO DE SOUSA
+            </div>
+            <div class="cartao-corpo">
+                <div class="cartao-foto-container">
+                FOTO
+                </div>
+                <div class="cartao-info">
+                <p><strong>Nome:</strong> ${escapeHTML(aluno.nomeAluno)}</p>
+                <p><strong>Responsável:</strong> ${escapeHTML(aluno.responsavel)}</p>
+                </div>
+            </div>
+            <div class="cartao-rodape-base">
+                <div class="rodape-info-professor">
+                <strong>Professora:</strong> ${escapeHTML(aluno.professora)}<br>
+                <strong>Turma:</strong> ${escapeHTML(aluno.turma)}
+                </div>
+            </div>
+            <div class="rodape-logo-flutuante">
+                <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
+            </div>
+            </div>
+        `;
+                }
+
+                function criarEspacadorHTML() {
+                    return `<div class="espacador-quebra-pagina"></div>`;
+                }
+
+                async function carregarECriarCartoes() {
+                    if (!containerPagina) {
+                        console.error("Elemento 'paginaCartoes' não encontrado no DOM.");
+                        document.body.insertAdjacentHTML("afterbegin", '<p style="color: red; text-align: center; padding: 20px; background: #fff; border: 1px solid red;">Erro crítico: Container da página não encontrado...</p>');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(caminhoArquivoJSON);
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status} ao carregar ${caminhoArquivoJSON}`);
+                        }
+                        const dadosCartoes = await response.json();
+
+                        if (dadosCartoes && dadosCartoes.length > 0) {
+                            let htmlConteudo = "";
+                            dadosCartoes.forEach((aluno, index) => {
+                                if (index > 0 && index % cartoesPorQuebraVisual === 0) {
+                                    htmlConteudo += criarEspacadorHTML();
+                                }
+                                htmlConteudo += criarCartaoHTML(aluno);
+                            });
+                            containerPagina.innerHTML = htmlConteudo;
+                        } else {
+                            containerPagina.innerHTML = `<p style="text-align: center; padding: 20px;">Nenhum dado de aluno encontrado...</p>`;
+                        }
+                    } catch (error) {
+                        console.error("Erro ao carregar ou processar o arquivo JSON:", error);
+                        containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha ao carregar os dados dos cartões...</p>`;
+                    }
+                }
+
+                carregarECriarCartoes();
+            });
+        </script>
+    </body>
+</html>
