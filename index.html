@@ -1,94 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Cartões Escolares - Organização de Dados</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <style>
-    /* CSS permanece o mesmo da última versão fornecida */
-    :root {
-        --cartao-largura-base: 86mm;
-        --cartao-altura-base: 54mm;
-        --fator-escala-visual: 1.03;
-        --cor-cabecalho-fundo: #3351e0;
-        --cor-cabecalho-texto: #fff;
-        --cor-foto-fundo: #f4b544;
-        --cor-foto-texto: #fff;
-        --cor-info-texto: #333;
-        --cor-rodape-base-fundo: #3aa44a;
-        --cor-rodape-info-texto: #fff;
-        --cor-rodape-dir-slogan: #555;
-        --cor-cartao-fundo: #fff;
-        --cor-borda-corte: #777;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: #e4e1d8; padding: 20px 0; font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-    .pagina-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-    .pagina {
-        background-color: white; width: 210mm; min-height: 297mm;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); position: relative;
-        display: grid; grid-template-columns: repeat(2, 1fr);
-        align-content: flex-start; padding: 12mm;
-        column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
-        row-gap: 15mm; align-items: start; justify-items: center;
-    }
-    @page { size: A4; margin: 0; }
-    @media print {
-        body { background-color: white; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .pagina-container { gap: 0; }
-        .pagina { margin: 0; box-shadow: none; width: 210mm; height: auto; min-height: 0; padding: 12mm; overflow: visible !important; }
-        .no-print { display: none !important; }
-        .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
-        .cartao { box-shadow: none !important; border: 0.5pt dashed var(--cor-borda-corte) !important;}
-    }
-    .cartao {
-      width: var(--cartao-largura-base); height: var(--cartao-altura-base);
-      transform: scale(var(--fator-escala-visual)); transform-origin: center center;
-      border-radius: 5mm; border: 0.5pt dashed #aaa;
-      background: var(--cor-cartao-fundo); overflow: hidden;
-      display: flex; flex-direction: column; position: relative;
-      page-break-inside: avoid !important;
-    }
-    .cartao-cabecalho {
-      background-color: var(--cor-cabecalho-fundo); padding: 3mm;
-      color: var(--cor-cabecalho-texto); text-align: center; font-size: 9.5pt;
-      font-weight: 700; flex-shrink: 0; z-index: 1;
-    }
-    .cartao-corpo { display: flex; padding: 3mm; flex-grow: 1; z-index: 0; }
-    .cartao-foto-container {
-      flex: 0 0 23mm; height: 23mm; background-color: var(--cor-foto-fundo);
-      border-radius: 2.5mm; display: flex; align-items: center; justify-content: center;
-      color: var(--cor-foto-texto); font-size: 8.5pt; font-weight: 700;
-      margin-right: 4mm; flex-shrink: 0;
-    }
-    .cartao-info {
-      flex: 1; color: var(--cor-info-texto); font-size: 7.5pt;
-      display: flex; flex-direction: column; justify-content: center; font-weight: 400;
-    }
-    .cartao-info p { margin-bottom: 1mm; line-height: 1.3; }
-    .cartao-info strong { font-weight: 700; }
-    .cartao-rodape-base {
-      width: 45mm; background-color: var(--cor-rodape-base-fundo);
-      color: var(--cor-rodape-info-texto); padding: 4mm; flex-shrink: 0;
-      position: relative; z-index: 0; border-radius: 0 5mm 0 0;
-    }
-    .rodape-info-professor { font-size: 7.5pt; font-weight: 400; line-height: 1.3; }
-    .rodape-info-professor strong { font-weight: 700; }
-    .rodape-logo-flutuante { position: absolute; bottom: 3mm; right: 4mm; z-index: 1; }
-    .rodape-logo-flutuante img { max-width: 20mm; max-height: 14mm; height: auto; display: block; }
-    .espacador-quebra-pagina { grid-column: 1 / -1; height: 1px; page-break-before: always !important; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Cartões Escolares com Fotos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <!-- JSZip e FileSaver via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" defer></script>
+    <style>
+        :root {
+            --cartao-largura-base: 86mm;
+            --cartao-altura-base: 54mm;
+            --fator-escala-visual: 1.03;
+
+            --cor-cabecalho-fundo: #3351e0;
+            --cor-cabecalho-texto: #fff;
+            --cor-foto-fundo: #f4b544;
+            --cor-foto-texto: #fff;
+            --cor-info-texto: #333;
+            --cor-rodape-base-fundo: #3aa44a;
+            --cor-rodape-info-texto: #fff;
+            --cor-rodape-dir-slogan: #555;
+            --cor-cartao-fundo: #fff;
+            --cor-borda-corte: #777;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #e4e1d8; padding: 20px 0; font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        .pagina-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .pagina {
+            background-color: white; width: 210mm; min-height: 297mm;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); position: relative;
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            align-content: flex-start; padding: 12mm;
+            column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
+            row-gap: 15mm; align-items: start; justify-items: center;
+        }
+        @page { size: A4; margin: 0; }
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .pagina-container { gap: 0; }
+            .pagina { margin: 0; box-shadow: none; width: 210mm; height: auto; min-height: 0; padding: 12mm; overflow: visible !important; }
+            .no-print { display: none !important; }
+            .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+            .cartao { box-shadow: none; border: 0.5pt dashed var(--cor-borda-corte) !important; }
+            .cartao-foto-container img { /* Garante que a imagem seja impressa */
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+            }
+        }
+        .cartao {
+            width: var(--cartao-largura-base); height: var(--cartao-altura-base);
+            transform: scale(var(--fator-escala-visual)); transform-origin: center center;
+            border-radius: 5mm; border: 0.5pt dashed #aaa;
+            background: var(--cor-cartao-fundo); overflow: hidden;
+            display: flex; flex-direction: column; position: relative;
+            page-break-inside: avoid !important;
+        }
+        .cartao-cabecalho {
+            background-color: var(--cor-cabecalho-fundo); padding: 3mm;
+            color: var(--cor-cabecalho-texto); text-align: center; font-size: 9.5pt;
+            font-weight: 700; flex-shrink: 0; z-index: 1;
+        }
+        .cartao-corpo { display: flex; padding: 3mm; flex-grow: 1; z-index: 0; }
+        .cartao-foto-container {
+            flex: 0 0 23mm; height: 23mm;
+            background-color: var(--cor-foto-fundo); border-radius: 2.5mm;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--cor-foto-texto); font-size: 8.5pt; font-weight: 700;
+            margin-right: 4mm; flex-shrink: 0; overflow: hidden; /* Para cortar a img se for maior */
+        }
+        .cartao-foto-container img { /* Estilo para a imagem da foto */
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cobre o container, pode cortar a imagem se não for 1:1 */
+        }
+        .cartao-info {
+            flex: 1; color: var(--cor-info-texto); font-size: 7.5pt;
+            display: flex; flex-direction: column; justify-content: center; font-weight: 400;
+        }
+        .cartao-info p { margin-bottom: 1mm; line-height: 1.3; }
+        .cartao-info strong { font-weight: 700; }
+        .cartao-rodape-base {
+            width: 45mm; background-color: var(--cor-rodape-base-fundo);
+            color: var(--cor-rodape-info-texto); padding: 4mm; flex-shrink: 0;
+            position: relative; z-index: 0; border-radius: 0 5mm 0 0;
+        }
+        .rodape-info-professor { font-size: 7.5pt; font-weight: 400; line-height: 1.3; }
+        .rodape-info-professor strong { font-weight: 700; }
+        .rodape-logo-flutuante { position: absolute; bottom: 3mm; right: 4mm; z-index: 1; }
+        .rodape-logo-flutuante img { max-width: 20mm; max-height: 14mm; height: auto; display: block; }
+        .espacador-quebra-pagina { grid-column: 1 / -1; height: 1px; page-break-before: always !important; }
+
+        /* Estilo para o botão de upload de ZIP */
+        .upload-zip-label {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            background-color: #007bff;
+            color: white;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+        .upload-zip-label:hover {
+            background-color: #0069d9;
+        }
+        #inputCarregarZipFotos {
+            display: none;
+        }
+        .controles-pagina {
+            display:flex;
+            gap: 10px;
+            position: fixed;
+            top: 10px; left: 10px;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-  <button onclick="window.print()" class="no-print" style="position: fixed; top: 10px; left: 10px; padding: 10px; z-index: 1000;">Exportar para PDF / Imprimir</button>
-  <button id="limparDados" class="no-print" style="position: fixed; top: 50px; left: 10px; padding: 10px; z-index: 1000; background-color: #f44336; color: white; border: none;">
-    Limpar Dados Locais e Recarregar
-  </button>
-  <button id="organizarDados" class="no-print" style="position: fixed; top: 90px; left: 10px; padding: 10px; z-index: 1000; background-color: #4CAF50; color: white; border: none;">
-    Organizar Dados dos Alunos
-  </button>
+  <div class="controles-pagina no-print">
+      <button onclick="window.print()">Exportar para PDF / Imprimir</button>
+      <button id="limparDados" style="background-color: #f44336; color: white; border: none;">
+        Limpar Dados Locais e Recarregar
+      </button>
+      <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
+      <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none;">
+      <!-- O botão de Organizar pode ser adicionado aqui também se desejar -->
+  </div>
+
 
   <div class="pagina-container">
     <div class="pagina" id="paginaCartoes">
@@ -96,93 +137,35 @@
     </div>
   </div>
 
-  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.3); font-size: 12px; max-width: 300px; z-index: 1001;">
+  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
       <strong>Instruções para Exportar/Imprimir...</strong>
-      <p>Os dados dos alunos são carregados e salvos localmente.</p>
+      <p>Os dados são carregados dos arquivos JSON e salvos localmente. Você pode carregar um ZIP com as fotos dos alunos.</p>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const containerPagina = document.getElementById('paginaCartoes');
-        const caminhoArquivoMat = 'dados_alunos_mat.json';
-        const caminhoArquivoVesp = 'dados_alunos_vesp.json';
+    document.addEventListener("DOMContentLoaded", function () {
+        const containerPagina = document.getElementById("paginaCartoes");
+        const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
+        const btnLimparDados = document.getElementById('limparDados');
+
+        const caminhoArquivoMat = "dados_alunos_mat.json";
+        const caminhoArquivoVesp = "dados_alunos_vesp.json";
         const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
         const cartoesPorQuebraVisual = 8;
 
-        const btnLimparDados = document.getElementById('limparDados');
-        const btnOrganizarDados = document.getElementById('organizarDados');
+        // Objeto para armazenar as imagens carregadas do ZIP como Data URLs
+        // Chave: nome do arquivo (ex: "aluno_foto.png"), Valor: Data URL da imagem
+        let imagensCarregadasDoZip = {};
 
         if(btnLimparDados) {
             btnLimparDados.addEventListener('click', function() {
                 localStorage.removeItem(chaveLocalStorage);
-                alert('Dados locais limpos. A página será recarregada para buscar os arquivos JSON originais.');
+                // Também limpar as imagens carregadas do ZIP em memória, se necessário
+                imagensCarregadasDoZip = {};
+                alert('Dados locais e fotos em memória limpos. A página será recarregada.');
                 window.location.reload();
             });
         }
-
-        if(btnOrganizarDados) {
-            btnOrganizarDados.addEventListener('click', async function() { // Tornar async para carregar se necessário
-                let dadosAtuais = obterDadosAtuais();
-                if (!dadosAtuais || dadosAtuais.length === 0) {
-                    alert("Nenhum dado para organizar. Carregando dados primeiro...");
-                    await carregarDadosDosArquivos(); // Tenta carregar se não houver nada
-                    dadosAtuais = obterDadosAtuais();
-                    if (!dadosAtuais || dadosAtuais.length === 0) {
-                        alert("Ainda não há dados para organizar após tentativa de recarga.");
-                        return;
-                    }
-                }
-
-                const dadosOrganizados = organizarDados(dadosAtuais);
-                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosOrganizados));
-                renderizarCartoes(dadosOrganizados);
-                alert('Dados organizados e salvos localmente!');
-            });
-        }
-
-        function obterDadosAtuais() {
-            const dadosSalvos = localStorage.getItem(chaveLocalStorage);
-            if (dadosSalvos) {
-                try {
-                    return JSON.parse(dadosSalvos);
-                } catch (e) {
-                    console.error("Erro ao parsear dados do localStorage ao organizar:", e);
-                    return null;
-                }
-            }
-            return null;
-        }
-
-        function definirOrdemTurma(turmaNome) {
-            const nomeTurmaLower = turmaNome.toLowerCase();
-            if (nomeTurmaLower.includes("creche iii")) return 1;
-            if (nomeTurmaLower.includes("infantil i")) return 2; // Mesmo que seja "Infantil I I"
-            if (nomeTurmaLower.includes("infantil ii")) return 3;
-            if (nomeTurmaLower.includes("1° ano") || nomeTurmaLower.includes("1º ano")) return 4;
-            return 5; // Outras turmas, se houver
-        }
-
-        function organizarDados(dados) {
-            return dados.sort((a, b) => {
-                // 1. Ordenar por Turno (Matutino primeiro)
-                const turnoA = a.turma.toLowerCase().includes("matutino") ? 1 : 2;
-                const turnoB = b.turma.toLowerCase().includes("matutino") ? 1 : 2;
-                if (turnoA !== turnoB) {
-                    return turnoA - turnoB;
-                }
-
-                // 2. Ordenar por Turma (Creche III, Infantil I, Infantil II, 1° Ano)
-                const ordemTurmaA = definirOrdemTurma(a.turma);
-                const ordemTurmaB = definirOrdemTurma(b.turma);
-                if (ordemTurmaA !== ordemTurmaB) {
-                    return ordemTurmaA - ordemTurmaB;
-                }
-
-                // 3. Ordenar por Nome do Aluno (Alfabética)
-                return a.nomeAluno.localeCompare(b.nomeAluno, 'pt-BR', { sensitivity: 'base' });
-            });
-        }
-
 
         function criarCartaoHTML(aluno) {
             const escapeHTML = str => {
@@ -191,11 +174,26 @@
                 div.textContent = str;
                 return div.innerHTML;
             };
+
+            const nomeArquivoFoto = aluno.arquivoFoto; // Espera-se que esta propriedade exista
+            const imagemSrc = nomeArquivoFoto && imagensCarregadasDoZip[nomeArquivoFoto]
+                              ? imagensCarregadasDoZip[nomeArquivoFoto]
+                              : null; // null ou um placeholder se não houver imagem
+
+            let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>'; // Placeholder padrão
+            if (imagemSrc) {
+                fotoElemento = `<img src="${imagemSrc}" alt="Foto de ${escapeHTML(aluno.nomeAluno)}">`;
+            }
+
             return `
-                <div class="cartao">
-                    <div class="cartao-cabecalho"> E. M. ANA MARIA CORDEIRO DE SOUSA </div>
+                <div class="cartao" data-arquivo-foto="${nomeArquivoFoto || ''}"> <!-- Adiciona data attribute -->
+                    <div class="cartao-cabecalho">
+                        E. M. ANA MARIA CORDEIRO DE SOUSA
+                    </div>
                     <div class="cartao-corpo">
-                        <div class="cartao-foto-container"> FOTO </div>
+                        <div class="cartao-foto-container">
+                           ${fotoElemento}
+                        </div>
                         <div class="cartao-info">
                             <p><strong>Nome:</strong> ${escapeHTML(aluno.nomeAluno)}</p>
                             <p><strong>Responsável:</strong> ${escapeHTML(aluno.responsavel)}</p>
@@ -226,7 +224,7 @@
                     if (index > 0 && index % cartoesPorQuebraVisual === 0) {
                         htmlConteudo += criarEspacadorHTML();
                     }
-                    htmlConteudo += criarCartaoHTML(aluno);
+                    htmlConteudo += criarCartaoHTML(aluno); // Passa as imagens carregadas
                 });
                 containerPagina.innerHTML = htmlConteudo;
             } else {
@@ -241,65 +239,119 @@
                     fetch(caminhoArquivoMat).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede mat.', error: e })),
                     fetch(caminhoArquivoVesp).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede vesp.', error: e }))
                 ]);
-
-                let dadosMat = [];
-                let dadosVesp = [];
-
-                if (respostaMat.ok) {
-                    dadosMat = await respostaMat.json();
-                } else {
-                    console.error(`Erro ao carregar ${caminhoArquivoMat}: ${respostaMat.status} ${respostaMat.statusText}`, respostaMat.error || '');
-                }
-
-                if (respostaVesp.ok) {
-                    dadosVesp = await respostaVesp.json();
-                } else {
-                    console.error(`Erro ao carregar ${caminhoArquivoVesp}: ${respostaVesp.status} ${respostaVesp.statusText}`, respostaVesp.error || '');
-                }
+                let dadosMat = []; let dadosVesp = [];
+                if (respostaMat.ok) { dadosMat = await respostaMat.json(); }
+                else { console.error(`Erro ao carregar ${caminhoArquivoMat}:`, respostaMat.statusText, respostaMat.error || ''); }
+                if (respostaVesp.ok) { dadosVesp = await respostaVesp.json(); }
+                else { console.error(`Erro ao carregar ${caminhoArquivoVesp}:`, respostaVesp.statusText, respostaVesp.error || ''); }
                 
                 if (dadosMat.length === 0 && dadosVesp.length === 0) {
                     throw new Error("Nenhum dado pode ser carregado dos arquivos JSON.");
                 }
-
                 const dadosUnificados = [...dadosMat, ...dadosVesp];
-                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosUnificados));
-                console.log("Dados unificados dos arquivos salvos no localStorage.");
-                return dadosUnificados; // Retorna os dados carregados
+                // Validação da propriedade arquivoFoto
+                const dadosValidos = dadosUnificados.filter(aluno => {
+                    if (!aluno.arquivoFoto) {
+                        console.warn(`Aluno ${aluno.nomeAluno} não possui a propriedade 'arquivoFoto'. Será omitido se as fotos dependerem disso.`);
+                    }
+                    return true; // Mantém todos por enquanto, a lógica de exibição decide
+                });
 
+                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosValidos));
+                console.log("Dados unificados dos arquivos salvos no localStorage.");
+                return dadosValidos;
             } catch (error) {
                 console.error("Erro final ao carregar ou processar os arquivos JSON:", error);
                 if(containerPagina) containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
-                return null; // Retorna null em caso de erro
+                return null;
             }
         }
-
 
         async function carregarDadosIniciais() {
             if (!containerPagina) {
                 console.error("Elemento 'paginaCartoes' não encontrado.");
-                document.body.insertAdjacentHTML("afterbegin", '<p style="color: red; text-align: center; padding: 20px; background: #fff; border: 1px solid red;">Erro: Container da página não encontrado.</p>');
+                document.body.insertAdjacentHTML("afterbegin", '<p>Erro: Container da página não encontrado.</p>');
                 return;
             }
-
-            let dadosParaRenderizar = obterDadosAtuais();
-
-            if (dadosParaRenderizar) {
+            const dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
+            let dadosParaRenderizar = null;
+            if (dadosSalvosLocalmente) {
                 console.log("Carregando dados do localStorage.");
-            } else {
-                console.log("Nenhum dado no localStorage. Carregando dos arquivos JSON...");
+                try {
+                    dadosParaRenderizar = JSON.parse(dadosSalvosLocalmente);
+                } catch(e) {
+                    console.error("Erro ao parsear dados do localStorage:", e);
+                    localStorage.removeItem(chaveLocalStorage);
+                }
+            }
+            if (!dadosParaRenderizar) {
+                console.log("Nenhum dado no localStorage ou dados corrompidos. Carregando dos arquivos JSON...");
                 dadosParaRenderizar = await carregarDadosDosArquivos();
             }
-            
             if(dadosParaRenderizar) {
                 renderizarCartoes(dadosParaRenderizar);
             } else {
-                 // Mensagem de erro já deve ter sido exibida por carregarDadosDosArquivos ou obterDadosAtuais (se parse falhou)
-                if (!containerPagina.innerHTML.includes('Falha')) { // Evita duplicar msg de erro
-                    containerPagina.innerHTML = `<p style="text-align: center; padding: 20px;">Não foi possível carregar os dados dos alunos.</p>`;
+                if (!containerPagina.innerHTML.includes('Falha')) {
+                    containerPagina.innerHTML = `<p>Não foi possível carregar os dados dos alunos.</p>`;
                 }
             }
         }
 
+        // Lidar com o upload do ZIP de fotos
+        if (inputCarregarZipFotos) {
+            inputCarregarZipFotos.addEventListener('change', async function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (typeof JSZip === "undefined") {
+                        alert("Biblioteca JSZip não carregada."); console.error("JSZip não definido.");
+                        event.target.value = null; return;
+                    }
+                    const zip = new JSZip();
+                    try {
+                        const carregado = await zip.loadAsync(file);
+                        let novasImagensCarregadas = {}; // Temporário para esta carga
+                        let count = 0;
+
+                        const promessasArquivos = [];
+                        for (const nomeArquivoNoZip in carregado.files) {
+                            if (!carregado.files[nomeArquivoNoZip].dir) {
+                                const arquivoDoZip = carregado.files[nomeArquivoNoZip];
+                                // O nomeArquivoNoZip deve ser o nome exato esperado (ex: aluno_x.png)
+                                promessasArquivos.push(
+                                    arquivoDoZip.async("blob").then(blob => {
+                                        return new Promise((resolve) => {
+                                            const reader = new FileReader();
+                                            reader.onloadend = function() {
+                                                novasImagensCarregadas[nomeArquivoNoZip] = reader.result; // Salva como Data URL
+                                                count++;
+                                                resolve();
+                                            };
+                                            reader.readAsDataURL(blob);
+                                        });
+                                    })
+                                );
+                            }
+                        }
+                        
+                        await Promise.all(promessasArquivos);
+
+                        if (count > 0) {
+                            imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas }; // Funde com existentes
+                            alert(`${count} fotos carregadas do ZIP! Os cartões serão atualizados.`);
+                            // Re-renderiza os cartões com as novas imagens
+                            const dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+                            renderizarCartoes(dadosAtuais);
+                        } else {
+                            alert("Nenhuma foto encontrada ou processada no ZIP com nomes correspondentes.");
+                        }
+                    } catch (error) {
+                        console.error("Erro ao carregar ou processar o arquivo ZIP:", error);
+                        alert("Ocorreu um erro ao carregar o ZIP.");
+                    }
+                }
+                event.target.value = null; // Limpa o input
+            });
+        }
         carregarDadosIniciais();
     });
   </script>
