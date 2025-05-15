@@ -1,368 +1,144 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <title>Cartões Escolares - Estilo Anterior (Dados Unificados)</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Alunos</title>
     <style>
-        :root {
-            --cartao-largura-base: 86mm;
-            --cartao-altura-base: 54mm; /* Altura original deste design */
-            --fator-escala-visual: 1.03;
-
-            --cor-cabecalho-fundo: #3351e0;
-            --cor-cabecalho-texto: #fff;
-            --cor-foto-fundo: #f4b544; /* Para placeholder da foto 23x23mm */
-            --cor-foto-texto: #fff;
-            --cor-info-texto: #333;
-            --cor-rodape-base-fundo: #3aa44a; /* Verde do rodapé */
-            --cor-rodape-info-texto: #fff;
-            --cor-rodape-dir-slogan: #555; /* Se o slogan for usado */
-            --cor-cartao-fundo: #fff;
-            --cor-borda-corte: #777;
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 800px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .aluno-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        .aluno-card h3 { margin-top: 0; }
+        .aluno-card p { margin: 5px 0; }
+        .aluno-card button {
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
         }
-
-        body {
-            background-color: #e4e1d8;
-            padding: 20px 0;
-            font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .pagina-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .pagina {
-            background-color: white;
-            width: 210mm;
-            min-height: 297mm;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            align-content: flex-start;
-
-            padding: 12mm;
-            /* Gaps para cartões 86x54mm com escala 1.03 */
-            /* Largura Visual: 86 * 1.03 = 88.58mm */
-            /* Altura Visual: 54 * 1.03 = 55.62mm */
-            column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
-            /* (210 - 24 - 177.16) = 8.84mm */
-            row-gap: calc((297mm - 2*12mm - 5*(var(--cartao-altura-base) * var(--fator-escala-visual))) / 4); /* Para 5 linhas */
-            /* (297 - 24 - 5 * 55.62) = (273 - 278.1) / 4 = negativo. Isso significa que 5 linhas não cabem com este gap.
-               Vamos ajustar para 4 linhas, o que dá um gap maior.
-               (297 - 24 - 4 * 55.62) / 3 = (273 - 222.48) / 3 = 50.52 / 3 = ~16.8mm
-               Ou um valor fixo. Como no seu CSS original: row-gap: 15mm;
-            */
-            row-gap: 15mm; /* Do seu CSS original */
-
-
-            align-items: start;
-            justify-items: center;
-        }
-
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
-        @media print {
-            body {
-                background-color: white; padding: 0; margin: 0;
-                -webkit-print-color-adjust: exact; print-color-adjust: exact;
-            }
-            .pagina-container { gap: 0; }
-            .pagina {
-                margin: 0; box-shadow: none; width: 210mm;
-                height: auto; min-height: 0; padding: 12mm;
-                overflow: visible !important;
-            }
-            .no-print { display: none !important; }
-            .espacador-quebra-pagina {
-                height: 0 !important; margin: 0 !important;
-                padding: 0 !important; border: none !important;
-            }
-            .cartao {
-                box-shadow: none !important;
-                border: 0.5pt dashed var(--cor-borda-corte) !important;
-            }
-        }
-
-        .cartao {
-            width: var(--cartao-largura-base);
-            height: var(--cartao-altura-base);
-            transform: scale(var(--fator-escala-visual));
-            transform-origin: center center;
-            border-radius: 5mm;
-            border: 0.5pt dashed #aaa; /* Borda para tela */
-            background: var(--cor-cartao-fundo);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            page-break-inside: avoid !important;
-        }
-
-        .cartao-cabecalho {
-            background-color: var(--cor-cabecalho-fundo);
-            padding: 3mm;
-            color: var(--cor-cabecalho-texto);
-            text-align: center;
-            font-size: 9.5pt;
-            font-weight: 700;
-            flex-shrink: 0;
-            z-index: 1; /* Alterado de volta do seu CSS, mas logo pode precisar de z-index maior */
-        }
-
-        .cartao-corpo {
-            display: flex;
-            padding: 3mm;
-            flex-grow: 1;
-            z-index: 0; /* Para ficar abaixo do logo se sobrepor */
-        }
-
-        .cartao-foto-container { /* Foto quadrada */
-            flex: 0 0 23mm;
-            height: 23mm;
-            background-color: var(--cor-foto-fundo);
-            border-radius: 2.5mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--cor-foto-texto);
-            font-size: 8.5pt;
-            font-weight: 700;
-            margin-right: 4mm;
-            flex-shrink: 0;
-        }
-
-        .cartao-info { /* Nome e Responsável ao lado da foto */
-            flex: 1;
-            color: var(--cor-info-texto);
-            font-size: 7.5pt;
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Centraliza verticalmente Nome e Responsável */
-            font-weight: 400;
-        }
-        .cartao-info p {
-            margin-bottom: 1mm;
-            line-height: 1.3;
-        }
-        .cartao-info strong {
-            font-weight: 700;
-        }
-
-        .cartao-rodape-base { /* Rodapé verde com Professor/Turma */
-            width: 45mm; /* Largura fixa como no seu CSS */
-            background-color: var(--cor-rodape-base-fundo);
-            color: var(--cor-rodape-info-texto);
-            padding: 4mm;
-            flex-shrink: 0;
-            position: relative; /* Para contexto do logo, se o logo fosse filho dele */
-            z-index: 0; /* Abaixo do logo flutuante */
-            border-radius: 0 5mm 0 0; /* Canto superior direito arredondado */
-        }
-
-        .rodape-info-professor { /* Texto dentro do rodapé verde */
-            font-size: 7.5pt;
-            font-weight: 400;
-            line-height: 1.3;
-        }
-        .rodape-info-professor strong {
-            font-weight: 700;
-        }
-
-        .rodape-logo-flutuante { /* Logo flutuante */
-            position: absolute;
-            bottom: 3mm;
-            right: 4mm;
-            z-index: 1; /* Acima do rodapé verde e do corpo */
-        }
-        .rodape-logo-flutuante img {
-            max-width: 20mm; /* Do seu CSS original */
-            max-height: 14mm;/* Do seu CSS original */
-            height: auto;
-            display: block;
-        }
-        /* Se o slogan for usado
-        .rodape-logo-flutuante .slogan {
-            font-size: 6pt;
-            color: var(--cor-rodape-dir-slogan);
-            margin-top: 0.5mm;
-            text-align: right;
-            font-weight: 400;
-        }
-        */
-
-        .espacador-quebra-pagina {
-            grid-column: 1 / -1;
-            height: 1px;
-            page-break-before: always !important;
-        }
+        .aluno-card button:hover { background-color: #0056b3; }
+        #formNovoAluno { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; background-color: #e9e9e9; }
+        #formNovoAluno label { display: block; margin-bottom: 5px; }
+        #formNovoAluno input { width: calc(100% - 12px); padding: 8px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        #formNovoAluno button { padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #formNovoAluno button:hover { background-color: #1e7e34; }
     </style>
 </head>
 <body>
-  <button onclick="window.print()" class="no-print" style="position: fixed; top: 10px; left: 10px; padding: 10px; z-index: 1000">Exportar para PDF / Imprimir</button>
-  <button id="limparDados" class="no-print" style="position: fixed; top: 50px; left: 10px; padding: 10px; z-index: 1000; background-color: #f44336; color: white; border: none;">
-    Limpar Dados Locais e Recarregar
-  </button>
+    <div class="container">
+        <h1>Gerenciador de Alunos</h1>
 
-  <div class="pagina-container">
-    <div class="pagina" id="paginaCartoes">
-      <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+        <!-- Formulário para adicionar novos alunos (exemplo) -->
+        <div id="formNovoAluno">
+            <h2>Adicionar Novo Aluno</h2>
+            <label for="novoNome">Nome:</label>
+            <input type="text" id="novoNome" required>
+            <label for="novoResponsavel">Responsável:</label>
+            <input type="text" id="novoResponsavel" required>
+            <label for="novoProfessor">Professor:</label>
+            <input type="text" id="novoProfessor" required>
+            <label for="novoTurma">Turma:</label>
+            <input type="text" id="novoTurma" required>
+            <button onclick="adicionarAluno()">Adicionar Aluno</button>
+        </div>
+
+        <h2>Alunos Cadastrados</h2>
+        <div id="listaAlunos">
+            <!-- Os cartões dos alunos serão inseridos aqui pelo JavaScript -->
+        </div>
     </div>
-  </div>
 
-  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
-      <strong>Instruções para Exportar/Imprimir...</strong>
-      <p>Os dados são carregados dos arquivos JSON e salvos localmente.</p>
-  </div>
+    <script>
+        const STORAGE_KEY = 'alunos';
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const containerPagina = document.getElementById("paginaCartoes");
-        const caminhoArquivoMat = "dados_alunos_mat.json";
-        const caminhoArquivoVesp = "dados_alunos_vesp.json"; // Assumindo que o JSON vespertino se chama assim
-        const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
-        const cartoesPorQuebraVisual = 8; // 4 linhas de 2 cartões de 54mm (+escala) devem caber com bom gap
-
-        const btnLimparDados = document.getElementById('limparDados');
-        if(btnLimparDados) {
-            btnLimparDados.addEventListener('click', function() {
-                localStorage.removeItem(chaveLocalStorage);
-                alert('Dados locais limpos. A página será recarregada.');
-                window.location.reload();
-            });
+        function getAlunos() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         }
 
-        // A função criarCartaoHTML é exatamente a que você forneceu na sua última mensagem
-        function criarCartaoHTML(aluno) {
-            const escapeHTML = str => {
-                if (typeof str !== "string") return str;
-                const div = document.createElement("div");
-                div.textContent = str;
-                return div.innerHTML;
-            };
-
-            return `
-                <div class="cartao">
-                    <div class="cartao-cabecalho">
-                        E. M. ANA MARIA CORDEIRO DE SOUSA
-                    </div>
-                    <div class="cartao-corpo">
-                        <div class="cartao-foto-container"> <!-- Foto 23x23mm -->
-                        FOTO
-                        </div>
-                        <div class="cartao-info"> <!-- Nome e Responsável -->
-                            <p><strong>Nome:</strong> ${escapeHTML(aluno.nomeAluno)}</p>
-                            <p><strong>Responsável:</strong> ${escapeHTML(aluno.responsavel)}</p>
-                        </div>
-                    </div>
-                    <div class="cartao-rodape-base"> <!-- Rodapé verde com Professor/Turma -->
-                        <div class="rodape-info-professor">
-                            <strong>Professora:</strong> ${escapeHTML(aluno.professora)}<br>
-                            <strong>Turma:</strong> ${escapeHTML(aluno.turma)}
-                        </div>
-                    </div>
-                    <div class="rodape-logo-flutuante"> <!-- Logo flutuante -->
-                        <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
-                    </div>
-                </div>
-            `;
+        function salvarAlunos(alunos) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(alunos));
         }
 
-        function criarEspacadorHTML() {
-            return `<div class="espacador-quebra-pagina"></div>`;
-        }
+        function adicionarAluno() {
+            const nome = document.getElementById('novoNome').value;
+            const responsavel = document.getElementById('novoResponsavel').value;
+            const professor = document.getElementById('novoProfessor').value;
+            const turma = document.getElementById('novoTurma').value;
 
-        function renderizarCartoes(dadosParaRenderizar) {
-            if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
-            if (dadosParaRenderizar && dadosParaRenderizar.length > 0) {
-                let htmlConteudo = "";
-                dadosParaRenderizar.forEach((aluno, index) => {
-                    if (index > 0 && index % cartoesPorQuebraVisual === 0) {
-                        htmlConteudo += criarEspacadorHTML();
-                    }
-                    htmlConteudo += criarCartaoHTML(aluno);
-                });
-                containerPagina.innerHTML = htmlConteudo;
-            } else {
-                containerPagina.innerHTML = `<p style="text-align: center; padding: 20px;">Nenhum dado de aluno para exibir.</p>`;
-            }
-        }
-
-        async function carregarDadosIniciais() {
-            if (!containerPagina) {
-                console.error("Elemento 'paginaCartoes' não encontrado.");
-                document.body.insertAdjacentHTML("afterbegin", '<p style="color: red; text-align: center; padding: 20px; background: #fff; border: 1px solid red;">Erro: Container da página não encontrado.</p>');
+            if (!nome || !responsavel || !professor || !turma) {
+                alert('Por favor, preencha todos os campos.');
                 return;
             }
 
-            const dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
-            if (dadosSalvosLocalmente) {
-                console.log("Carregando dados do localStorage.");
-                try {
-                    const dadosParseados = JSON.parse(dadosSalvosLocalmente);
-                    renderizarCartoes(dadosParseados);
-                    return;
-                } catch(e) {
-                    console.error("Erro ao parsear dados do localStorage:", e);
-                    localStorage.removeItem(chaveLocalStorage);
-                }
+            const alunos = getAlunos();
+            const novoAluno = {
+                id: Date.now().toString(), // ID único simples
+                nome,
+                responsavel,
+                professor,
+                turma
+            };
+            alunos.push(novoAluno);
+            salvarAlunos(alunos);
+            renderizarAlunos();
+            // Limpar formulário
+            document.getElementById('novoNome').value = '';
+            document.getElementById('novoResponsavel').value = '';
+            document.getElementById('novoProfessor').value = '';
+            document.getElementById('novoTurma').value = '';
+        }
+
+        function renderizarAlunos() {
+            const listaAlunosDiv = document.getElementById('listaAlunos');
+            listaAlunosDiv.innerHTML = ''; // Limpa a lista atual
+            const alunos = getAlunos();
+
+            if (alunos.length === 0) {
+                listaAlunosDiv.innerHTML = '<p>Nenhum aluno cadastrado.</p>';
+                return;
             }
 
-            console.log("Carregando dados dos arquivos JSON.");
-            try {
-                const [respostaMat, respostaVesp] = await Promise.all([
-                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, status: 'FETCH_MAT_ERROR', error: e })),
-                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, status: 'FETCH_VESP_ERROR', error: e }))
-                ]);
+            alunos.forEach(aluno => {
+                const card = document.createElement('div');
+                card.className = 'aluno-card';
+                card.innerHTML = `
+                    <h3>${aluno.nome}</h3>
+                    <p><strong>ID:</strong> ${aluno.id}</p>
+                    <p><strong>Responsável:</strong> ${aluno.responsavel}</p>
+                    <p><strong>Professor:</strong> ${aluno.professor}</p>
+                    <p><strong>Turma:</strong> ${aluno.turma}</p>
+                    <button onclick="editarAluno('${aluno.id}')">Editar</button>
+                    <button onclick="removerAluno('${aluno.id}')" style="background-color: #dc3545; margin-left: 5px;">Remover</button>
+                `;
+                listaAlunosDiv.appendChild(card);
+            });
+        }
 
-                let dadosMat = [];
-                let dadosVesp = [];
+        function editarAluno(alunoId) {
+            // Redireciona para a página de edição, passando o ID do aluno
+            window.location.href = `editar-aluno.html?id=${alunoId}`;
+        }
 
-                if (respostaMat.ok) { dadosMat = await respostaMat.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoMat}:`, respostaMat.status, respostaMat.error || ''); }
-
-                if (respostaVesp.ok) { dadosVesp = await respostaVesp.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoVesp}:`, respostaVesp.status, respostaVesp.error || ''); }
-                
-                if (dadosMat.length === 0 && dadosVesp.length === 0 && !dadosSalvosLocalmente) { // Só mostra erro se realmente não carregou nada e não tinha local
-                    throw new Error("Nenhum dado pode ser carregado dos arquivos JSON e não há dados locais.");
-                }
-
-                const dadosUnificados = [...dadosMat, ...dadosVesp];
-                if (dadosUnificados.length > 0) { // Só salva se houver dados para salvar
-                    localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosUnificados));
-                    console.log("Dados unificados salvos no localStorage.");
-                    renderizarCartoes(dadosUnificados);
-                } else if (!dadosSalvosLocalmente) { // Se não carregou nada e não tinha local
-                     containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
-                }
-
-
-            } catch (error) {
-                console.error("Erro final ao carregar ou processar os arquivos JSON:", error);
-                if (!dadosSalvosLocalmente) { // Evita sobrescrever a mensagem de erro se os dados locais não puderam ser parseados
-                    containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
-                }
+        function removerAluno(alunoId) {
+            if (confirm('Tem certeza que deseja remover este aluno?')) {
+                let alunos = getAlunos();
+                alunos = alunos.filter(aluno => aluno.id !== alunoId);
+                salvarAlunos(alunos);
+                renderizarAlunos();
             }
         }
-        carregarDadosIniciais();
-    });
-  </script>
+
+        // Renderiza os alunos ao carregar a página
+        document.addEventListener('DOMContentLoaded', renderizarAlunos);
+    </script>
 </body>
 </html>
