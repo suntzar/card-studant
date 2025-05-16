@@ -1,11 +1,12 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <title>Cartões Escolares com Fotos</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartões Escolares com Fotos e Status</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <!-- JSZip e FileSaver via CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" defer></script>
@@ -22,7 +23,6 @@
             --cor-info-texto: #333;
             --cor-rodape-base-fundo: #3aa44a;
             --cor-rodape-info-texto: #fff;
-            --cor-rodape-dir-slogan: #555;
             --cor-cartao-fundo: #fff;
             --cor-borda-corte: #777;
         }
@@ -44,10 +44,8 @@
             .pagina { margin: 0; box-shadow: none; width: 210mm; height: auto; min-height: 0; padding: 12mm; overflow: visible !important; }
             .no-print { display: none !important; }
             .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
-            .cartao { box-shadow: none; border: 0.5pt dashed var(--cor-borda-corte) !important; }
-            .cartao-foto-container img { /* Garante que a imagem seja impressa */
-                -webkit-print-color-adjust: exact; print-color-adjust: exact;
-            }
+            .cartao { box-shadow: none !important; border: 0.5pt dashed var(--cor-borda-corte) !important; }
+            .cartao-foto-container img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
         .cartao {
             width: var(--cartao-largura-base); height: var(--cartao-altura-base);
@@ -68,13 +66,11 @@
             background-color: var(--cor-foto-fundo); border-radius: 2.5mm;
             display: flex; align-items: center; justify-content: center;
             color: var(--cor-foto-texto); font-size: 8.5pt; font-weight: 700;
-            margin-right: 4mm; flex-shrink: 0; overflow: hidden; /* Para cortar a img se for maior */
-            border: 1mm solid var(--cor-foto-fundo);
+            margin-right: 4mm; flex-shrink: 0; overflow: hidden;
         }
-        .cartao-foto-container img { /* Estilo para a imagem da foto */
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Cobre o container, pode cortar a imagem se não for 1:1 */
+        .cartao-foto-container img { width: 100%; height: 100%; object-fit: cover; }
+        .cartao-foto-container .foto-placeholder-texto { /* Estilo para o texto "FOTO" */
+            font-size: 8.5pt; font-weight: 700; color: var(--cor-foto-texto);
         }
         .cartao-info {
             flex: 1; color: var(--cor-info-texto); font-size: 7.5pt;
@@ -93,44 +89,32 @@
         .rodape-logo-flutuante img { max-width: 20mm; max-height: 14mm; height: auto; display: block; }
         .espacador-quebra-pagina { grid-column: 1 / -1; height: 1px; page-break-before: always !important; }
 
-        /* Estilo para o botão de upload de ZIP */
         .upload-zip-label {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            background-color: #007bff;
-            color: white;
-            display: inline-block;
-            transition: background-color 0.3s ease;
+            padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
+            font-size: 0.9em; background-color: #007bff; color: white;
+            display: inline-block; transition: background-color 0.3s ease;
         }
-        .upload-zip-label:hover {
-            background-color: #0069d9;
-        }
-        #inputCarregarZipFotos {
-            display: none;
-        }
+        .upload-zip-label:hover { background-color: #0069d9; }
         .controles-pagina {
-            display:flex;
-            gap: 10px;
-            position: fixed;
-            top: 10px; left: 10px;
-            z-index: 1000;
+            display:flex; gap: 10px; position: fixed;
+            top: 10px; left: 10px; z-index: 1000;
         }
+        .controles-pagina button, .controles-pagina label {
+            padding: 8px 15px; font-size:0.9em; border-radius: 4px; border:none; cursor:pointer;
+        }
+        .controles-pagina button { background-color: #6c757d; color:white; }
+        .controles-pagina button:hover { background-color: #5a6268; }
+        .controles-pagina #limparDados { background-color: #dc3545; }
+        .controles-pagina #limparDados:hover { background-color: #c82333; }
     </style>
 </head>
 <body>
   <div class="controles-pagina no-print">
-      <button onclick="window.print()">Exportar para PDF / Imprimir</button>
-      <button id="limparDados" style="background-color: #f44336; color: white; border: none;">
-        Limpar Dados Locais e Recarregar
-      </button>
+      <button onclick="window.print()">Imprimir Cartões</button>
+      <button id="limparDados">Limpar Dados & Fotos</button>
       <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
       <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none;">
-      <!-- O botão de Organizar pode ser adicionado aqui também se desejar -->
   </div>
-
 
   <div class="pagina-container">
     <div class="pagina" id="paginaCartoes">
@@ -138,33 +122,50 @@
     </div>
   </div>
 
-  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
+  <div id="statusArea" class="no-print" style="position: fixed; bottom: 10px; right: 10px; background-color: #333; color: white; padding: 10px 15px; border-radius: 5px; font-size: 0.9em; z-index: 1005; opacity: 0; transition: opacity 0.5s ease-in-out, background-color 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+      <!-- Mensagens de status -->
+  </div>
+
+  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.3); font-size: 12px; max-width: 300px; z-index: 1001;">
       <strong>Instruções para Exportar/Imprimir...</strong>
-      <p>Os dados são carregados dos arquivos JSON e salvos localmente. Você pode carregar um ZIP com as fotos dos alunos.</p>
+      <p>Carregue o ZIP com fotos. Os dados são salvos localmente.</p>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const containerPagina = document.getElementById("paginaCartoes");
+    document.addEventListener('DOMContentLoaded', function() {
+        const containerPagina = document.getElementById('paginaCartoes');
         const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
         const btnLimparDados = document.getElementById('limparDados');
+        const statusArea = document.getElementById('statusArea');
 
         const caminhoArquivoMat = "dados_alunos_mat.json";
         const caminhoArquivoVesp = "dados_alunos_vesp.json";
         const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
         const cartoesPorQuebraVisual = 8;
-
-        // Objeto para armazenar as imagens carregadas do ZIP como Data URLs
-        // Chave: nome do arquivo (ex: "aluno_foto.png"), Valor: Data URL da imagem
         let imagensCarregadasDoZip = {};
+        let statusTimeout;
 
-        if(btnLimparDados) {
+        function exibirStatus(mensagem, tipo = 'info', duracao = 5000) {
+            if (!statusArea) return;
+            statusArea.textContent = mensagem;
+            statusArea.style.opacity = '1';
+            let corFundo = '#333'; // Padrão (info)
+            if (tipo === 'sucesso') corFundo = '#27ae60';
+            else if (tipo === 'erro') corFundo = '#c0392b';
+            else if (tipo === 'aviso') corFundo = '#f39c12';
+            statusArea.style.backgroundColor = corFundo;
+            clearTimeout(statusTimeout);
+            if (duracao > 0) {
+                statusTimeout = setTimeout(() => { statusArea.style.opacity = '0'; }, duracao);
+            }
+        }
+
+        if (btnLimparDados) {
             btnLimparDados.addEventListener('click', function() {
                 localStorage.removeItem(chaveLocalStorage);
-                // Também limpar as imagens carregadas do ZIP em memória, se necessário
                 imagensCarregadasDoZip = {};
-                alert('Dados locais e fotos em memória limpos. A página será recarregada.');
-                window.location.reload();
+                exibirStatus('Dados locais e fotos em memória limpos. Recarregando...', 'info');
+                setTimeout(() => window.location.reload(), 1500);
             });
         }
 
@@ -175,28 +176,19 @@
                 div.textContent = str;
                 return div.innerHTML;
             };
-
-            const nomeArquivoFoto = aluno.arquivoFoto; // Espera-se que esta propriedade exista
-            const imagemSrc = nomeArquivoFoto && imagensCarregadasDoZip[nomeArquivoFoto]
-                              ? imagensCarregadasDoZip[nomeArquivoFoto]
-                              : null; // null ou um placeholder se não houver imagem
-
-            let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>'; // Placeholder padrão
+            const nomeArquivoFoto = aluno.arquivoFoto;
+            const imagemSrc = nomeArquivoFoto && imagensCarregadasDoZip[nomeArquivoFoto] ? imagensCarregadasDoZip[nomeArquivoFoto] : null;
+            let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
             if (imagemSrc) {
                 fotoElemento = `<img src="${imagemSrc}" alt="Foto de ${escapeHTML(aluno.nomeAluno)}">`;
             }
-
             return `
-                <div class="cartao" data-arquivo-foto="${nomeArquivoFoto || ''}"> <!-- Adiciona data attribute -->
-                    <div class="cartao-cabecalho">
-                        E. M. ANA MARIA CORDEIRO DE SOUSA
-                    </div>
+                <div class="cartao" data-arquivo-foto="${nomeArquivoFoto || ''}">
+                    <div class="cartao-cabecalho">E. M. ANA MARIA CORDEIRO DE SOUSA</div>
                     <div class="cartao-corpo">
-                        <div class="cartao-foto-container">
-                           ${fotoElemento}
-                        </div>
+                        <div class="cartao-foto-container">${fotoElemento}</div>
                         <div class="cartao-info">
-                            <p><strong>Nome:</strong> ${escapeHTML(aluno.nomeAluno)}</p>
+                            <p class="nome-aluno"><strong></strong>${escapeHTML(aluno.nomeAluno)}</p>
                             <p><strong>Responsável:</strong> ${escapeHTML(aluno.responsavel)}</p>
                         </div>
                     </div>
@@ -209,23 +201,18 @@
                     <div class="rodape-logo-flutuante">
                         <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
-        function criarEspacadorHTML() {
-            return `<div class="espacador-quebra-pagina"></div>`;
-        }
+        function criarEspacadorHTML() { return `<div class="espacador-quebra-pagina"></div>`; }
 
         function renderizarCartoes(dadosParaRenderizar) {
             if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
             if (dadosParaRenderizar && dadosParaRenderizar.length > 0) {
                 let htmlConteudo = "";
                 dadosParaRenderizar.forEach((aluno, index) => {
-                    if (index > 0 && index % cartoesPorQuebraVisual === 0) {
-                        htmlConteudo += criarEspacadorHTML();
-                    }
-                    htmlConteudo += criarCartaoHTML(aluno); // Passa as imagens carregadas
+                    if (index > 0 && index % cartoesPorQuebraVisual === 0) { htmlConteudo += criarEspacadorHTML(); }
+                    htmlConteudo += criarCartaoHTML(aluno);
                 });
                 containerPagina.innerHTML = htmlConteudo;
             } else {
@@ -235,95 +222,122 @@
 
         async function carregarDadosDosArquivos() {
             console.log("Tentando carregar dados dos arquivos JSON.");
+            exibirStatus("Carregando dados dos arquivos...", "info", 0);
             try {
                 const [respostaMat, respostaVesp] = await Promise.all([
-                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede mat.', error: e })),
-                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, statusText: e.message || 'Erro de rede vesp.', error: e }))
+                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, statusText: e.message || 'Erro rede mat.', error: e })),
+                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, statusText: e.message || 'Erro rede vesp.', error: e }))
                 ]);
                 let dadosMat = []; let dadosVesp = [];
                 if (respostaMat.ok) { dadosMat = await respostaMat.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoMat}:`, respostaMat.statusText, respostaMat.error || ''); }
+                else { console.error(`Erro ${caminhoArquivoMat}:`, respostaMat.statusText, respostaMat.error || ''); }
                 if (respostaVesp.ok) { dadosVesp = await respostaVesp.json(); }
-                else { console.error(`Erro ao carregar ${caminhoArquivoVesp}:`, respostaVesp.statusText, respostaVesp.error || ''); }
+                else { console.error(`Erro ${caminhoArquivoVesp}:`, respostaVesp.statusText, respostaVesp.error || ''); }
                 
-                if (dadosMat.length === 0 && dadosVesp.length === 0) {
-                    throw new Error("Nenhum dado pode ser carregado dos arquivos JSON.");
-                }
+                if (dadosMat.length === 0 && dadosVesp.length === 0) { throw new Error("Nenhum dado carregado dos JSONs."); }
                 const dadosUnificados = [...dadosMat, ...dadosVesp];
-                // Validação da propriedade arquivoFoto
                 const dadosValidos = dadosUnificados.filter(aluno => {
-                    if (!aluno.arquivoFoto) {
-                        console.warn(`Aluno ${aluno.nomeAluno} não possui a propriedade 'arquivoFoto'. Será omitido se as fotos dependerem disso.`);
-                    }
-                    return true; // Mantém todos por enquanto, a lógica de exibição decide
+                    if (!aluno.arquivoFoto) { console.warn(`Aluno ${aluno.nomeAluno} não tem 'arquivoFoto'.`); }
+                    return true;
                 });
-
                 localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosValidos));
-                console.log("Dados unificados dos arquivos salvos no localStorage.");
+                console.log("Dados unificados salvos no localStorage.");
+                exibirStatus("Dados carregados e salvos!", "sucesso");
                 return dadosValidos;
             } catch (error) {
-                console.error("Erro final ao carregar ou processar os arquivos JSON:", error);
-                if(containerPagina) containerPagina.innerHTML = `<p style="color: red; text-align: center; padding: 20px;">Falha crítica ao carregar dados. Verifique o console e os arquivos JSON.</p>`;
+                console.error("Erro ao carregar/processar JSON:", error);
+                exibirStatus("Falha ao carregar dados dos arquivos!", "erro");
+                if (containerPagina) containerPagina.innerHTML = `<p>Falha ao carregar dados.</p>`;
                 return null;
             }
         }
 
         async function carregarDadosIniciais() {
-            if (!containerPagina) {
-                console.error("Elemento 'paginaCartoes' não encontrado.");
-                document.body.insertAdjacentHTML("afterbegin", '<p>Erro: Container da página não encontrado.</p>');
-                return;
-            }
+            if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
             const dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
             let dadosParaRenderizar = null;
             if (dadosSalvosLocalmente) {
                 console.log("Carregando dados do localStorage.");
-                try {
-                    dadosParaRenderizar = JSON.parse(dadosSalvosLocalmente);
-                } catch(e) {
+                exibirStatus("Dados carregados do armazenamento local.", "info", 3000);
+                try { dadosParaRenderizar = JSON.parse(dadosSalvosLocalmente); }
+                catch(e) {
                     console.error("Erro ao parsear dados do localStorage:", e);
                     localStorage.removeItem(chaveLocalStorage);
+                    exibirStatus("Erro nos dados locais. Recarregando dos arquivos.", "aviso");
                 }
             }
             if (!dadosParaRenderizar) {
-                console.log("Nenhum dado no localStorage ou dados corrompidos. Carregando dos arquivos JSON...");
+                console.log("Carregando dos arquivos JSON...");
                 dadosParaRenderizar = await carregarDadosDosArquivos();
             }
             if(dadosParaRenderizar) {
                 renderizarCartoes(dadosParaRenderizar);
             } else {
-                if (!containerPagina.innerHTML.includes('Falha')) {
-                    containerPagina.innerHTML = `<p>Não foi possível carregar os dados dos alunos.</p>`;
+                if (containerPagina && !containerPagina.innerHTML.includes('Falha')) {
+                    containerPagina.innerHTML = `<p>Não foi possível carregar os dados.</p>`;
                 }
             }
         }
 
-        // Lidar com o upload do ZIP de fotos
+        function verificarFotosFaltantes() {
+            const dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+            if (!dadosAtuais || dadosAtuais.length === 0) {
+                console.log("Sem dados de alunos para verificar fotos faltantes.");
+                exibirStatus("Sem dados de alunos para verificar fotos.", "aviso");
+                return;
+            }
+            let fotosFaltantesCount = 0;
+            const alunosSemFoto = [];
+            dadosAtuais.forEach(aluno => {
+                if (aluno.arquivoFoto && !imagensCarregadasDoZip[aluno.arquivoFoto]) {
+                    fotosFaltantesCount++;
+                    alunosSemFoto.push({ nome: aluno.nomeAluno, turma: aluno.turma, arquivoEsperado: aluno.arquivoFoto });
+                } else if (!aluno.arquivoFoto) {
+                    fotosFaltantesCount++;
+                    alunosSemFoto.push({ nome: aluno.nomeAluno + " (sem 'arquivoFoto')", turma: aluno.turma, arquivoEsperado: "N/D" });
+                }
+            });
+            console.log("%c--- Verificação de Fotos Faltantes ---", "color: blue; font-weight: bold;");
+            if (fotosFaltantesCount > 0) {
+                const msg = `Fotos faltantes: ${fotosFaltantesCount}. Ver console para detalhes.`;
+                exibirStatus(msg, "aviso", 10000);
+                console.warn(`Total de fotos faltantes: ${fotosFaltantesCount}`);
+                console.log("Alunos sem foto correspondente ou 'arquivoFoto' não definido:");
+                alunosSemFoto.forEach(aluno => {
+                    console.log(`- Nome: ${aluno.nome}, Turma: ${aluno.turma}, Esperado: ${aluno.arquivoEsperado}`);
+                });
+            } else {
+                const msg = "Todas as fotos parecem estar carregadas!";
+                exibirStatus(msg, "sucesso");
+                console.log(msg);
+            }
+            console.log("------------------------------------");
+        }
+
         if (inputCarregarZipFotos) {
             inputCarregarZipFotos.addEventListener('change', async function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     if (typeof JSZip === "undefined") {
-                        alert("Biblioteca JSZip não carregada."); console.error("JSZip não definido.");
+                        exibirStatus("Erro: JSZip não carregado.", "erro"); console.error("JSZip não definido.");
                         event.target.value = null; return;
                     }
+                    exibirStatus("Processando ZIP...", "info", 0);
                     const zip = new JSZip();
                     try {
                         const carregado = await zip.loadAsync(file);
-                        let novasImagensCarregadas = {}; // Temporário para esta carga
+                        let novasImagensCarregadas = {};
                         let count = 0;
-
                         const promessasArquivos = [];
                         for (const nomeArquivoNoZip in carregado.files) {
                             if (!carregado.files[nomeArquivoNoZip].dir) {
                                 const arquivoDoZip = carregado.files[nomeArquivoNoZip];
-                                // O nomeArquivoNoZip deve ser o nome exato esperado (ex: aluno_x.png)
                                 promessasArquivos.push(
                                     arquivoDoZip.async("blob").then(blob => {
                                         return new Promise((resolve) => {
                                             const reader = new FileReader();
                                             reader.onloadend = function() {
-                                                novasImagensCarregadas[nomeArquivoNoZip] = reader.result; // Salva como Data URL
+                                                novasImagensCarregadas[nomeArquivoNoZip] = reader.result;
                                                 count++;
                                                 resolve();
                                             };
@@ -332,25 +346,24 @@
                                     })
                                 );
                             }
-                        }
-                        
+                        }                        
                         await Promise.all(promessasArquivos);
-
                         if (count > 0) {
-                            imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas }; // Funde com existentes
-                            alert(`${count} fotos carregadas do ZIP! Os cartões serão atualizados.`);
-                            // Re-renderiza os cartões com as novas imagens
+                            imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas };
+                            exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
                             const dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
                             renderizarCartoes(dadosAtuais);
+                            verificarFotosFaltantes();
                         } else {
-                            alert("Nenhuma foto encontrada ou processada no ZIP com nomes correspondentes.");
+                            exibirStatus("Nenhuma foto no ZIP ou nomes não correspondem.", "aviso");
+                            verificarFotosFaltantes();
                         }
                     } catch (error) {
-                        console.error("Erro ao carregar ou processar o arquivo ZIP:", error);
-                        alert("Ocorreu um erro ao carregar o ZIP.");
+                        console.error("Erro ao processar ZIP:", error);
+                        exibirStatus("Erro ao processar ZIP.", "erro");
                     }
                 }
-                event.target.value = null; // Limpa o input
+                event.target.value = null;
             });
         }
         carregarDadosIniciais();
