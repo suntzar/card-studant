@@ -46,6 +46,13 @@
             .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
             .cartao { box-shadow: none !important; border: 0.5pt dashed var(--cor-borda-corte) !important; }
             .cartao-foto-container img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            /* --- NOVA REGRA CSS PARA IMPRESSÃO --- */
+            /* Se a página estiver com a classe de filtragem, oculta os cartões sem foto */
+            .pagina.filtrando-impressao .cartao.sem-foto {
+                display: none !important;
+            }
+            /* --- FIM DA NOVA REGRA --- */
         }
         .cartao {
             width: var(--cartao-largura-base); height: var(--cartao-altura-base);
@@ -97,8 +104,9 @@
         }
         .upload-zip-label:hover { background-color: #0069d9; }
         .controles-pagina {
-            display:flex; gap: 10px; position: fixed;
-            top: 10px; left: 10px; z-index: 1000;
+            display:flex; flex-wrap: wrap; align-items: center; gap: 10px; position: fixed;
+            top: 10px; left: 10px; z-index: 1000; background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .controles-pagina button, .controles-pagina label {
             padding: 8px 15px; font-size:0.9em; border-radius: 4px; border:none; cursor:pointer;
@@ -107,15 +115,24 @@
         .controles-pagina button:hover { background-color: #5a6268; }
         .controles-pagina #limparDados { background-color: #dc3545; }
         .controles-pagina #limparDados:hover { background-color: #c82333; }
+        /* --- NOVO ESTILO PARA O CHECKBOX DE FILTRO --- */
+        .filtro-impressao-container { display: flex; align-items: center; gap: 5px; color: #333; font-weight: 600; }
+        .filtro-impressao-container input { margin-top: 1px; }
     </style>
 </head>
 <body>
+  <!-- --- CONTROLES DA PÁGINA ATUALIZADOS --- -->
   <div class="controles-pagina no-print">
-      <button onclick="window.print()">Imprimir Cartões</button>
+      <button id="btnImprimir">Imprimir Cartões</button>
+      <div class="filtro-impressao-container">
+          <input type="checkbox" id="filtroImprimirComFoto" name="filtroImprimirComFoto">
+          <label for="filtroImprimirComFoto">Imprimir somente com foto</label>
+      </div>
       <button id="limparDados">Limpar Dados & Fotos</button>
       <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
       <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none;">
   </div>
+  <!-- --- FIM DOS CONTROLES ATUALIZADOS --- -->
 
   <div class="pagina-container">
     <div class="pagina" id="paginaCartoes">
@@ -138,6 +155,10 @@
         const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
         const btnLimparDados = document.getElementById('limparDados');
         const statusArea = document.getElementById('statusArea');
+        // --- NOVOS ELEMENTOS DO DOM ---
+        const btnImprimir = document.getElementById('btnImprimir');
+        const chkFiltroImprimir = document.getElementById('filtroImprimirComFoto');
+        // --- FIM DOS NOVOS ELEMENTOS ---
 
         const caminhoArquivoMat = "dados_alunos_mat.json";
         const caminhoArquivoVesp = "dados_alunos_vesp.json";
@@ -169,7 +190,26 @@
                 setTimeout(() => window.location.reload(), 1500);
             });
         }
+        
+        // --- NOVA LÓGICA DE IMPRESSÃO ---
+        if (btnImprimir && chkFiltroImprimir) {
+            btnImprimir.addEventListener('click', () => {
+                if (chkFiltroImprimir.checked) {
+                    // Adiciona a classe de filtragem antes de imprimir
+                    containerPagina.classList.add('filtrando-impressao');
+                }
+                
+                window.print();
+            });
 
+            // Limpa a classe de filtragem depois que a caixa de diálogo de impressão for fechada
+            window.addEventListener('afterprint', () => {
+                containerPagina.classList.remove('filtrando-impressao');
+            });
+        }
+        // --- FIM DA NOVA LÓGICA DE IMPRESSÃO ---
+
+        // --- FUNÇÃO `criarCartaoHTML` ATUALIZADA ---
         function criarCartaoHTML(aluno) {
             const escapeHTML = str => {
                 if (typeof str !== "string") return str;
@@ -179,12 +219,20 @@
             };
             const nomeArquivoFoto = aluno.arquivoFoto;
             const imagemSrc = nomeArquivoFoto && imagensCarregadasDoZip[nomeArquivoFoto] ? imagensCarregadasDoZip[nomeArquivoFoto] : null;
+            
+            let classesCartao = "cartao";
             let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
+            
             if (imagemSrc) {
                 fotoElemento = `<img src="${imagemSrc}" alt="Foto de ${escapeHTML(aluno.nomeAluno)}">`;
+            } else {
+                // Adiciona a classe "sem-foto" se não houver imagem
+                classesCartao += " sem-foto";
             }
+
+            // Usa a variável `classesCartao` para definir as classes do elemento
             return `
-                <div class="cartao" data-arquivo-foto="${nomeArquivoFoto || ''}">
+                <div class="${classesCartao}" data-arquivo-foto="${nomeArquivoFoto || ''}">
                     <div class="cartao-cabecalho">E. M. ANA MARIA CORDEIRO DE SOUSA</div>
                     <div class="cartao-corpo">
                         <div class="cartao-foto-container">${fotoElemento}</div>
@@ -204,6 +252,7 @@
                     </div>
                 </div>`;
         }
+        // --- FIM DA FUNÇÃO ATUALIZADA ---
 
         function criarEspacadorHTML() { return `<div class="espacador-quebra-pagina"></div>`; }
 
