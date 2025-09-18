@@ -108,7 +108,9 @@
         .controles-pagina button:hover { background-color: #5a6268; }
         .controles-pagina #limparDados { background-color: #dc3545; }
         .controles-pagina #limparDados:hover { background-color: #c82333; }
-        /* NOVO: Estilo para o controle do filtro */
+        /* NOVO: Estilo para o novo botão */
+        .controles-pagina #btnCarregarJson { background-color: #17a2b8; }
+        .controles-pagina #btnCarregarJson:hover { background-color: #138496; }
         .filtro-container { display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 4px; }
         .filtro-container label { padding: 0; color: #333; cursor: pointer; }
         .filtro-container input { cursor: pointer; }
@@ -119,9 +121,13 @@
   <div class="controles-pagina no-print">
       <button onclick="window.print()">Imprimir Cartões</button>
       <button id="limparDados">Limpar Dados & Fotos</button>
+      <!-- NOVO: Botão para carregar dados JSON e input de arquivo oculto -->
+      <button id="btnCarregarJson">Carregar Dados (JSON)</button>
+      <input type="file" id="inputCarregarJson" accept=".json,application/json" style="display: none;">
+      
       <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
       <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none;">
-      <!-- NOVO: Checkbox para controlar a filtragem -->
+      
       <div class="filtro-container">
           <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto">
           <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
@@ -139,8 +145,8 @@
   </div>
 
   <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.3); font-size: 12px; max-width: 300px; z-index: 1001;">
-      <strong>Instruções para Exportar/Imprimir...</strong>
-      <p>1. Carregue o ZIP com fotos.<br>2. Marque "Imprimir apenas com foto".<br>3. Clique em "Imprimir Cartões".</p>
+      <strong>Instruções:</strong>
+      <p>1. Clique em "Carregar Dados (JSON)" para selecionar seu arquivo.<br>2. Clique em "Carregar ZIP de Fotos" para as fotos dos alunos.<br>3. Use as opções para imprimir ou filtrar.</p>
   </div>
 
   <script>
@@ -149,11 +155,12 @@
         const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
         const btnLimparDados = document.getElementById('limparDados');
         const statusArea = document.getElementById('statusArea');
-        // NOVO: Referência ao checkbox
         const chkImprimirApenasComFoto = document.getElementById('imprimirApenasComFoto');
 
-        const caminhoArquivoMat = "dados_alunos_mat.json";
-        const caminhoArquivoVesp = "dados_alunos_vesp.json";
+        // NOVO: Referências para os novos elementos de carregamento de JSON
+        const btnCarregarJson = document.getElementById('btnCarregarJson');
+        const inputCarregarJson = document.getElementById('inputCarregarJson');
+
         const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
         const cartoesPorQuebraVisual = 8;
         let imagensCarregadasDoZip = {};
@@ -163,7 +170,7 @@
             if (!statusArea) return;
             statusArea.textContent = mensagem;
             statusArea.style.opacity = '1';
-            let corFundo = '#333'; // Padrão (info)
+            let corFundo = '#333';
             if (tipo === 'sucesso') corFundo = '#27ae60';
             else if (tipo === 'erro') corFundo = '#c0392b';
             else if (tipo === 'aviso') corFundo = '#f39c12';
@@ -174,7 +181,6 @@
             }
         }
         
-        // NOVO: Event listener para o checkbox
         if (chkImprimirApenasComFoto) {
             chkImprimirApenasComFoto.addEventListener('change', atualizarExibicao);
         }
@@ -187,6 +193,51 @@
                 setTimeout(() => window.location.reload(), 1500);
             });
         }
+        
+        // NOVO: Lógica para carregar dados de um arquivo JSON
+        if (btnCarregarJson && inputCarregarJson) {
+            btnCarregarJson.addEventListener('click', () => {
+                inputCarregarJson.click(); // Aciona o clique no input de arquivo oculto
+            });
+
+            inputCarregarJson.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                
+                exibirStatus("Lendo arquivo JSON...", "info", 0);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const dadosDoArquivo = JSON.parse(e.target.result);
+
+                        if (!Array.isArray(dadosDoArquivo)) {
+                            throw new Error("O arquivo JSON não contém um array de dados de alunos.");
+                        }
+
+                        // Salva os dados lidos no localStorage
+                        localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosDoArquivo));
+                        exibirStatus(`Sucesso! ${dadosDoArquivo.length} registros carregados do JSON.`, "sucesso");
+                        
+                        // Atualiza a exibição com os novos dados
+                        atualizarExibicao();
+                    } catch (error) {
+                        console.error("Erro ao processar o arquivo JSON:", error);
+                        exibirStatus(`Erro: ${error.message}`, "erro");
+                    } finally {
+                        // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
+                        event.target.value = null;
+                    }
+                };
+                reader.onerror = function() {
+                    exibirStatus("Ocorreu um erro ao ler o arquivo.", "erro");
+                    event.target.value = null;
+                };
+                reader.readAsText(file);
+            });
+        }
+
 
         function criarCartaoHTML(aluno) {
             const escapeHTML = str => {
@@ -236,12 +287,11 @@
                 containerPagina.innerHTML = htmlConteudo;
                 exibirStatus(`Exibindo ${dadosParaRenderizar.length} cartões.`, 'info', 4000);
             } else {
-                containerPagina.innerHTML = `<p style="text-align: center; padding: 20px;">Nenhum cartão para exibir com o filtro atual.</p>`;
+                containerPagina.innerHTML = `<p style="text-align: center; padding: 20px; grid-column: 1 / -1;">Nenhum dado de aluno carregado. Use o botão "Carregar Dados (JSON)" para começar.</p>`;
                 exibirStatus(`Nenhum cartão para exibir.`, 'aviso', 4000);
             }
         }
         
-        // NOVO: Função centralizadora para renderizar/filtrar os cartões
         function atualizarExibicao() {
             const todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
             if (!todosOsAlunos || todosOsAlunos.length === 0) {
@@ -261,52 +311,19 @@
             }
         }
 
-
-        async function carregarDadosDosArquivos() {
-            console.log("Tentando carregar dados dos arquivos JSON.");
-            exibirStatus("Carregando dados dos arquivos...", "info", 0);
-            try {
-                const [respostaMat, respostaVesp] = await Promise.all([
-                    fetch(caminhoArquivoMat).catch(e => ({ ok: false, statusText: e.message || 'Erro rede mat.', error: e })),
-                    fetch(caminhoArquivoVesp).catch(e => ({ ok: false, statusText: e.message || 'Erro rede vesp.', error: e }))
-                ]);
-                let dadosMat = []; let dadosVesp = [];
-                if (respostaMat.ok) { dadosMat = await respostaMat.json(); }
-                else { console.error(`Erro ${caminhoArquivoMat}:`, respostaMat.statusText, respostaMat.error || ''); }
-                if (respostaVesp.ok) { dadosVesp = await respostaVesp.json(); }
-                else { console.error(`Erro ${caminhoArquivoVesp}:`, respostaVesp.statusText, respostaVesp.error || ''); }
-                
-                if (dadosMat.length === 0 && dadosVesp.length === 0) { throw new Error("Nenhum dado carregado dos JSONs."); }
-                const dadosUnificados = [...dadosMat, ...dadosVesp];
-                const dadosValidos = dadosUnificados.filter(aluno => {
-                    if (!aluno.arquivoFoto) { console.warn(`Aluno ${aluno.nomeAluno} não tem 'arquivoFoto'.`); }
-                    return true;
-                });
-                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosValidos));
-                console.log("Dados unificados salvos no localStorage.");
-                exibirStatus("Dados carregados e salvos!", "sucesso");
-                return dadosValidos;
-            } catch (error) {
-                console.error("Erro ao carregar/processar JSON:", error);
-                exibirStatus("Falha ao carregar dados dos arquivos!", "erro");
-                if (containerPagina) containerPagina.innerHTML = `<p>Falha ao carregar dados.</p>`;
-                return null;
-            }
-        }
-
+        // MODIFICADO: A função `carregarDadosIniciais` agora apenas carrega do localStorage.
+        // A responsabilidade de colocar os dados lá foi movida para o novo botão de upload.
         async function carregarDadosIniciais() {
             if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
             let dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
             
-            if (!dadosSalvosLocalmente) {
-                console.log("Carregando dos arquivos JSON...");
-                await carregarDadosDosArquivos();
-            } else {
+            if (dadosSalvosLocalmente) {
                  console.log("Carregando dados do localStorage.");
                  exibirStatus("Dados carregados do armazenamento local.", "info", 3000);
+            } else {
+                 console.log("Nenhum dado no localStorage. Aguardando carregamento de arquivo JSON.");
+                 exibirStatus("Pronto para carregar dados de um arquivo JSON.", "info", 6000);
             }
-
-            // MODIFICADO: Chama a nova função centralizadora
             atualizarExibicao();
         }
 
@@ -381,7 +398,6 @@
                         if (count > 0) {
                             imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas };
                             exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
-                            // MODIFICADO: Chama a função que aplica o filtro se necessário
                             atualizarExibicao(); 
                             verificarFotosFaltantes();
                         } else {
