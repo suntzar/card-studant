@@ -1,259 +1,480 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cartões Escolares com Fotos e Status</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
     <!-- JSZip e FileSaver via CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" defer></script>
     <style>
-        :root {
-            --cartao-largura-base: 86mm;
-            --cartao-altura-base: 54mm;
-            --fator-escala-visual: 1.03;
+      :root {
+        --cartao-largura-base: 86mm;
+        --cartao-altura-base: 54mm;
+        --fator-escala-visual: 1.03;
 
-            --cor-cabecalho-fundo: #3351e0;
-            --cor-cabecalho-texto: #fff;
-            --cor-foto-fundo: #f4b544;
-            --cor-foto-texto: #fff;
-            --cor-info-texto: #333;
-            --cor-rodape-base-fundo: #3aa44a;
-            --cor-rodape-info-texto: #fff;
-            --cor-cartao-fundo: #fff;
-            --cor-borda-corte: #777;
+        --cor-cabecalho-fundo: #3351e0;
+        --cor-cabecalho-texto: #fff;
+        --cor-foto-fundo: #f4b544;
+        --cor-foto-texto: #fff;
+        --cor-info-texto: #333;
+        --cor-rodape-base-fundo: #3aa44a;
+        --cor-rodape-info-texto: #fff;
+        --cor-cartao-fundo: #fff;
+        --cor-borda-corte: #777;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #e4e1d8;
+        padding: 20px 0;
+        font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .pagina-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .pagina {
+        background-color: white;
+        width: 210mm;
+        min-height: 297mm;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-content: flex-start;
+        padding: 12mm;
+        column-gap: calc((210mm - 2 * 12mm - 2 * (var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
+        row-gap: 15mm;
+        align-items: start;
+        justify-items: center;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          background-color: white;
+          padding: 0;
+          margin: 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #e4e1d8; padding: 20px 0; font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-        .pagina-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+        .pagina-container {
+          gap: 0;
+        }
         .pagina {
-            background-color: white; width: 210mm; min-height: 297mm;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); position: relative;
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            align-content: flex-start; padding: 12mm;
-            column-gap: calc((210mm - 2*12mm - 2*(var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
-            row-gap: 15mm; align-items: start; justify-items: center;
+          margin: 0;
+          box-shadow: none;
+          width: 210mm;
+          height: auto;
+          min-height: 0;
+          padding: 12mm;
+          overflow: visible !important;
         }
-        @page { size: A4; margin: 0; }
-        @media print {
-            body { background-color: white; padding: 0; margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .pagina-container { gap: 0; }
-            .pagina { margin: 0; box-shadow: none; width: 210mm; height: auto; min-height: 0; padding: 12mm; overflow: visible !important; }
-            .no-print { display: none !important; }
-            .espacador-quebra-pagina { height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
-            .cartao { box-shadow: none !important; border: 0.5pt dashed var(--cor-borda-corte) !important; }
-            .cartao-foto-container img { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print {
+          display: none !important;
+        }
+        .espacador-quebra-pagina {
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
         }
         .cartao {
-            width: var(--cartao-largura-base); height: var(--cartao-altura-base);
-            transform: scale(var(--fator-escala-visual)); transform-origin: center center;
-            border-radius: 5mm; border: 0.5pt dashed #aaa;
-            background: var(--cor-cartao-fundo); overflow: hidden;
-            display: flex; flex-direction: column; position: relative;
-            page-break-inside: avoid !important;
+          box-shadow: none !important;
+          border: 0.5pt dashed var(--cor-borda-corte) !important;
         }
-        .cartao-cabecalho {
-            background-color: var(--cor-cabecalho-fundo); padding: 3mm;
-            color: var(--cor-cabecalho-texto); text-align: center; font-size: 9.5pt;
-            font-weight: 700; flex-shrink: 0; z-index: 1;
+        .cartao-foto-container img {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
         }
-        .cartao-corpo { display: flex; padding: 3mm; flex-grow: 1; z-index: 0; }
-        .cartao-foto-container {
-            flex: 0 0 23mm; height: 23mm;
-            background-color: var(--cor-foto-fundo); border-radius: 2.5mm;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--cor-foto-texto); font-size: 8.5pt; font-weight: 700;
-            margin-right: 4mm; flex-shrink: 0; overflow: hidden;
-            border: 1mm solid var(--cor-foto-fundo);
-        }
-        .cartao-foto-container img { width: 100%; height: 100%; object-fit: cover; }
-        .cartao-foto-container .foto-placeholder-texto { /* Estilo para o texto "FOTO" */
-            font-size: 8.5pt; font-weight: 700; color: var(--cor-foto-texto);
-        }
-        .cartao-info {
-            flex: 1; color: var(--cor-info-texto); font-size: 7.5pt;
-            display: flex; flex-direction: column; justify-content: center; font-weight: 400;
-        }
-        .cartao-info p { margin-bottom: 1mm; line-height: 1.3; }
-        .cartao-info strong { font-weight: 700; }
-        .cartao-rodape-base {
-            width: 45mm; background-color: var(--cor-rodape-base-fundo);
-            color: var(--cor-rodape-info-texto); padding: 4mm; flex-shrink: 0;
-            position: relative; z-index: 0; border-radius: 0 5mm 0 0;
-        }
-        .rodape-info-professor { font-size: 7.5pt; font-weight: 400; line-height: 1.3; }
-        .rodape-info-professor strong { font-weight: 700; }
-        .rodape-logo-flutuante { position: absolute; bottom: 3mm; right: 4mm; z-index: 1; }
-        .rodape-logo-flutuante img { max-width: 20mm; max-height: 14mm; height: auto; display: block; }
-        .espacador-quebra-pagina { grid-column: 1 / -1; height: 1px; page-break-before: always !important; }
+      }
+      .cartao {
+        width: var(--cartao-largura-base);
+        height: var(--cartao-altura-base);
+        transform: scale(var(--fator-escala-visual));
+        transform-origin: center center;
+        border-radius: 5mm;
+        border: 0.5pt dashed #aaa;
+        background: var(--cor-cartao-fundo);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        page-break-inside: avoid !important;
+      }
+      .cartao-cabecalho {
+        background-color: var(--cor-cabecalho-fundo);
+        padding: 3mm;
+        color: var(--cor-cabecalho-texto);
+        text-align: center;
+        font-size: 9.5pt;
+        font-weight: 700;
+        flex-shrink: 0;
+        z-index: 1;
+      }
+      .cartao-corpo {
+        display: flex;
+        padding: 3mm;
+        flex-grow: 1;
+        z-index: 0;
+      }
+      .cartao-foto-container {
+        flex: 0 0 23mm;
+        height: 23mm;
+        background-color: var(--cor-foto-fundo);
+        border-radius: 2.5mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cor-foto-texto);
+        font-size: 8.5pt;
+        font-weight: 700;
+        margin-right: 4mm;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 1mm solid var(--cor-foto-fundo);
+      }
+      .cartao-foto-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cartao-foto-container .foto-placeholder-texto {
+        /* Estilo para o texto "FOTO" */
+        font-size: 8.5pt;
+        font-weight: 700;
+        color: var(--cor-foto-texto);
+      }
+      .cartao-info {
+        flex: 1;
+        color: var(--cor-info-texto);
+        font-size: 7.5pt;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: 400;
+      }
+      .cartao-info p {
+        margin-bottom: 1mm;
+        line-height: 1.3;
+      }
+      .cartao-info strong {
+        font-weight: 700;
+      }
+      .cartao-rodape-base {
+        width: 45mm;
+        background-color: var(--cor-rodape-base-fundo);
+        color: var(--cor-rodape-info-texto);
+        padding: 4mm;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 0;
+        border-radius: 0 5mm 0 0;
+      }
+      .rodape-info-professor {
+        font-size: 7.5pt;
+        font-weight: 400;
+        line-height: 1.3;
+      }
+      .rodape-info-professor strong {
+        font-weight: 700;
+      }
+      .rodape-logo-flutuante {
+        position: absolute;
+        bottom: 3mm;
+        right: 4mm;
+        z-index: 1;
+      }
+      .rodape-logo-flutuante img {
+        max-width: 20mm;
+        max-height: 14mm;
+        height: auto;
+        display: block;
+      }
+      .espacador-quebra-pagina {
+        grid-column: 1 / -1;
+        height: 1px;
+        page-break-before: always !important;
+      }
 
-        .upload-zip-label {
-            padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;
-            font-size: 0.9em; background-color: #007bff; color: white;
-            display: inline-block; transition: background-color 0.3s ease;
-        }
-        .upload-zip-label:hover { background-color: #0069d9; }
-        .controles-pagina {
-            display:flex; flex-wrap: wrap; align-items: center; gap: 10px; position: fixed;
-            top: 10px; left: 10px; z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.8); padding: 5px; border-radius: 5px;
-        }
-        .controles-pagina button, .controles-pagina label {
-            padding: 8px 15px; font-size:0.9em; border-radius: 4px; border:none; cursor:pointer;
-        }
-        .controles-pagina button { background-color: #6c757d; color:white; }
-        .controles-pagina button:hover { background-color: #5a6268; }
-        .controles-pagina #limparDados { background-color: #dc3545; }
-        .controles-pagina #limparDados:hover { background-color: #c82333; }
-        /* NOVO: Estilo para o novo botão */
-        .controles-pagina #btnCarregarJson { background-color: #17a2b8; }
-        .controles-pagina #btnCarregarJson:hover { background-color: #138496; }
-        .filtro-container { display: flex; align-items: center; gap: 5px; background: #f0f0f0; padding: 5px 10px; border-radius: 4px; }
-        .filtro-container label { padding: 0; color: #333; cursor: pointer; }
-        .filtro-container input { cursor: pointer; }
-
+      .upload-zip-label {
+        padding: 8px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+        background-color: #007bff;
+        color: white;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+      }
+      .upload-zip-label:hover {
+        background-color: #0069d9;
+      }
+      .controles-pagina {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      .controles-pagina button,
+      .controles-pagina label {
+        padding: 8px 15px;
+        font-size: 0.9em;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+      }
+      .controles-pagina button {
+        background-color: #6c757d;
+        color: white;
+      }
+      .controles-pagina button:hover {
+        background-color: #5a6268;
+      }
+      .controles-pagina #limparDados {
+        background-color: #dc3545;
+      }
+      .controles-pagina #limparDados:hover {
+        background-color: #c82333;
+      }
+      /* NOVO: Estilo para o novo botão */
+      .controles-pagina #btnCarregarJson {
+        background-color: #17a2b8;
+      }
+      .controles-pagina #btnCarregarJson:hover {
+        background-color: #138496;
+      }
+      .filtro-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0f0f0;
+        padding: 5px 10px;
+        border-radius: 4px;
+      }
+      .filtro-container label {
+        padding: 0;
+        color: #333;
+        cursor: pointer;
+      }
+      .filtro-container input {
+        cursor: pointer;
+      }
     </style>
-</head>
-<body>
-  <div class="controles-pagina no-print">
+  </head>
+  <body>
+    <div class="controles-pagina no-print">
       <button onclick="window.print()">Imprimir Cartões</button>
       <button id="limparDados">Limpar Dados & Fotos</button>
       <!-- NOVO: Botão para carregar dados JSON e input de arquivo oculto -->
       <button id="btnCarregarJson">Carregar Dados (JSON)</button>
-      <input type="file" id="inputCarregarJson" accept=".json,application/json" style="display: none;">
-      
+      <input type="file" id="inputCarregarJson" accept=".json,application/json" style="display: none" />
+
       <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
-      <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none;">
-      
+      <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none" />
+
       <div class="filtro-container">
-          <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto">
-          <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
+        <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto" />
+        <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
       </div>
-  </div>
-
-  <div class="pagina-container">
-    <div class="pagina" id="paginaCartoes">
-      <!-- Os cartões serão inseridos aqui pelo JavaScript -->
     </div>
-  </div>
 
-  <div id="statusArea" class="no-print" style="position: fixed; bottom: 10px; right: 10px; background-color: #333; color: white; padding: 10px 15px; border-radius: 5px; font-size: 0.9em; z-index: 1005; opacity: 0; transition: opacity 0.5s ease-in-out, background-color 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+    <div class="pagina-container">
+      <div class="pagina" id="paginaCartoes">
+        <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+      </div>
+    </div>
+
+    <div id="statusArea" class="no-print" style="position: fixed; bottom: 10px; right: 10px; background-color: #333; color: white; padding: 10px 15px; border-radius: 5px; font-size: 0.9em; z-index: 1005; opacity: 0; transition: opacity 0.5s ease-in-out, background-color 0.3s ease; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2)">
       <!-- Mensagens de status -->
-  </div>
+    </div>
 
-  <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.3); font-size: 12px; max-width: 300px; z-index: 1001;">
+    <div class="no-print" style="position: fixed; bottom: 10px; left: 10px; background: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); font-size: 12px; max-width: 300px; z-index: 1001">
       <strong>Instruções:</strong>
-      <p>1. Clique em "Carregar Dados (JSON)" para selecionar seu arquivo.<br>2. Clique em "Carregar ZIP de Fotos" para as fotos dos alunos.<br>3. Use as opções para imprimir ou filtrar.</p>
-  </div>
+      <p>1. Clique em "Carregar Dados (JSON)" para selecionar seu arquivo.<br />2. Clique em "Carregar ZIP de Fotos" para as fotos dos alunos.<br />3. Use as opções para imprimir ou filtrar.</p>
+    </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const containerPagina = document.getElementById('paginaCartoes');
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const containerPagina = document.getElementById("paginaCartoes");
         const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
-        const btnLimparDados = document.getElementById('limparDados');
-        const statusArea = document.getElementById('statusArea');
-        const chkImprimirApenasComFoto = document.getElementById('imprimirApenasComFoto');
+        const btnLimparDados = document.getElementById("limparDados");
+        const statusArea = document.getElementById("statusArea");
+        const chkImprimirApenasComFoto = document.getElementById("imprimirApenasComFoto");
 
         // NOVO: Referências para os novos elementos de carregamento de JSON
-        const btnCarregarJson = document.getElementById('btnCarregarJson');
-        const inputCarregarJson = document.getElementById('inputCarregarJson');
+        const btnCarregarJson = document.getElementById("btnCarregarJson");
+        const inputCarregarJson = document.getElementById("inputCarregarJson");
 
-        const chaveLocalStorage = 'dadosCartoesEscolaresUnificados';
+        const chaveLocalStorage = "dadosCartoesEscolaresUnificados";
         const cartoesPorQuebraVisual = 8;
         let imagensCarregadasDoZip = {};
         let statusTimeout;
 
-        function exibirStatus(mensagem, tipo = 'info', duracao = 5000) {
-            if (!statusArea) return;
-            statusArea.textContent = mensagem;
-            statusArea.style.opacity = '1';
-            let corFundo = '#333';
-            if (tipo === 'sucesso') corFundo = '#27ae60';
-            else if (tipo === 'erro') corFundo = '#c0392b';
-            else if (tipo === 'aviso') corFundo = '#f39c12';
-            statusArea.style.backgroundColor = corFundo;
-            clearTimeout(statusTimeout);
-            if (duracao > 0) {
-                statusTimeout = setTimeout(() => { statusArea.style.opacity = '0'; }, duracao);
-            }
+        function exibirStatus(mensagem, tipo = "info", duracao = 5000) {
+          if (!statusArea) return;
+          statusArea.textContent = mensagem;
+          statusArea.style.opacity = "1";
+          let corFundo = "#333";
+          if (tipo === "sucesso") corFundo = "#27ae60";
+          else if (tipo === "erro") corFundo = "#c0392b";
+          else if (tipo === "aviso") corFundo = "#f39c12";
+          statusArea.style.backgroundColor = corFundo;
+          clearTimeout(statusTimeout);
+          if (duracao > 0) {
+            statusTimeout = setTimeout(() => {
+              statusArea.style.opacity = "0";
+            }, duracao);
+          }
         }
-        
+
         if (chkImprimirApenasComFoto) {
-            chkImprimirApenasComFoto.addEventListener('change', atualizarExibicao);
+          chkImprimirApenasComFoto.addEventListener("change", atualizarExibicao);
         }
-        
+
         if (btnLimparDados) {
-            btnLimparDados.addEventListener('click', function() {
-                localStorage.removeItem(chaveLocalStorage);
-                imagensCarregadasDoZip = {};
-                exibirStatus('Dados locais e fotos em memória limpos. Recarregando...', 'info');
-                setTimeout(() => window.location.reload(), 1500);
-            });
+          btnLimparDados.addEventListener("click", function () {
+            localStorage.removeItem(chaveLocalStorage);
+            imagensCarregadasDoZip = {};
+            exibirStatus("Dados locais e fotos em memória limpos. Recarregando...", "info");
+            setTimeout(() => window.location.reload(), 1500);
+          });
         }
-        
+
+        // Função para converter string para Title Case, preservando numerais romanos
+        function toTitleCase(str) {
+          return str
+            .toLowerCase()
+            .replace(/\b(\w)/g, (s) => s.toUpperCase())
+            .replace(/\b(I|Ii|Iii|Iv|V)\b/gi, (match) => match.toUpperCase());
+        }
+
         // NOVO: Lógica para carregar dados de um arquivo JSON
         if (btnCarregarJson && inputCarregarJson) {
-            btnCarregarJson.addEventListener('click', () => {
-                inputCarregarJson.click(); // Aciona o clique no input de arquivo oculto
-            });
+          btnCarregarJson.addEventListener("click", () => {
+            inputCarregarJson.click(); // Aciona o clique no input de arquivo oculto
+          });
 
-            inputCarregarJson.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) {
-                    return;
+          inputCarregarJson.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+              return;
+            }
+
+            exibirStatus("Lendo arquivo JSON...", "info", 0);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              try {
+                const dadosDoArquivo = JSON.parse(e.target.result);
+                let dadosProcessados;
+
+                // Verifica se o JSON está no novo formato (com metadata e alunos)
+                if (dadosDoArquivo && dadosDoArquivo.metadata && Array.isArray(dadosDoArquivo.alunos)) {
+                  exibirStatus("Detectado novo formato de banco de dados. Processando...", "info");
+                  const turmasMap = new Map(dadosDoArquivo.metadata.turmas.map((t) => [t.id, t]));
+
+                  dadosProcessados = dadosDoArquivo.alunos
+                    .filter((aluno) => aluno.status === "Ativo") // Filtra apenas alunos ativos
+                    .map((aluno) => {
+                      const turma = turmasMap.get(aluno.turma_id);
+                      if (!turma) {
+                        console.warn(`Turma com id "${aluno.turma_id}" não encontrada para o aluno "${aluno.nome}".`);
+                        return null; // Ou um valor padrão
+                      }
+
+                      // Extrai o primeiro nome do professor(a)
+                      const nomeProfessor = turma.professor1 ? turma.professor1.split(" ")[0] : "N/D";
+
+                      return {
+                        id: aluno.id, // Adiciona o ID do aluno
+                        nomeAluno: aluno.nome,
+                        responsavel: aluno.mae || aluno.pai || "N/D",
+                        professora: nomeProfessor,
+                        turma: `${toTitleCase(turma.turma)} - ${toTitleCase(turma.turno)}`,
+                      };
+                    })
+                    .filter(Boolean); // Remove alunos que não puderam ser mapeados
+                } else if (Array.isArray(dadosDoArquivo)) {
+                  // Mantém a compatibilidade com o formato antigo
+                  exibirStatus("Detectado formato de dados antigo. Carregando diretamente.", "info");
+                  dadosProcessados = dadosDoArquivo;
+                } else {
+                  throw new Error("Formato do arquivo JSON não reconhecido.");
                 }
-                
-                exibirStatus("Lendo arquivo JSON...", "info", 0);
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const dadosDoArquivo = JSON.parse(e.target.result);
 
-                        if (!Array.isArray(dadosDoArquivo)) {
-                            throw new Error("O arquivo JSON não contém um array de dados de alunos.");
-                        }
+                // Salva os dados lidos no localStorage
+                localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosProcessados));
+                exibirStatus(`Sucesso! ${dadosProcessados.length} registros carregados e processados.`, "sucesso");
 
-                        // Salva os dados lidos no localStorage
-                        localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosDoArquivo));
-                        exibirStatus(`Sucesso! ${dadosDoArquivo.length} registros carregados do JSON.`, "sucesso");
-                        
-                        // Atualiza a exibição com os novos dados
-                        atualizarExibicao();
-                    } catch (error) {
-                        console.error("Erro ao processar o arquivo JSON:", error);
-                        exibirStatus(`Erro: ${error.message}`, "erro");
-                    } finally {
-                        // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
-                        event.target.value = null;
-                    }
-                };
-                reader.onerror = function() {
-                    exibirStatus("Ocorreu um erro ao ler o arquivo.", "erro");
-                    event.target.value = null;
-                };
-                reader.readAsText(file);
-            });
+                // Atualiza a exibição com os novos dados
+                atualizarExibicao();
+              } catch (error) {
+                console.error("Erro ao processar o arquivo JSON:", error);
+                exibirStatus(`Erro: ${error.message}`, "erro");
+              } finally {
+                // Limpa o valor do input para permitir carregar o mesmo arquivo novamente
+                event.target.value = null;
+              }
+            };
+            reader.onerror = function () {
+              exibirStatus("Ocorreu um erro ao ler o arquivo.", "erro");
+              event.target.value = null;
+            };
+            reader.readAsText(file);
+          });
         }
 
-
         function criarCartaoHTML(aluno) {
-            const escapeHTML = str => {
-                if (typeof str !== "string") return str;
-                const div = document.createElement("div");
-                div.textContent = str;
-                return div.innerHTML;
-            };
-            const nomeArquivoFoto = aluno.arquivoFoto;
-            const imagemSrc = nomeArquivoFoto && imagensCarregadasDoZip[nomeArquivoFoto] ? imagensCarregadasDoZip[nomeArquivoFoto] : null;
-            let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
-            if (imagemSrc) {
-                fotoElemento = `<img src="${imagemSrc}" alt="Foto de ${escapeHTML(aluno.nomeAluno)}">`;
+          const escapeHTML = (str) => {
+            if (typeof str !== "string") return str;
+            const div = document.createElement("div");
+            div.textContent = str;
+            return div.innerHTML;
+          };
+
+          // Lógica híbrida para encontrar a foto
+          let imagemSrc = null;
+          let arquivoFotoUsado = "N/D";
+
+          // 1. Tenta pelo ID do aluno (novo método)
+          const nomeArquivoPorId = `${aluno.id}.jpg`;
+          if (aluno.id && imagensCarregadasDoZip[nomeArquivoPorId]) {
+            imagemSrc = imagensCarregadasDoZip[nomeArquivoPorId];
+            arquivoFotoUsado = nomeArquivoPorId;
+          } else {
+            // 2. Se não encontrar, tenta pelo nome do aluno (método antigo)
+            const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
+            if (imagensCarregadasDoZip[nomeArquivoPorNome]) {
+              imagemSrc = imagensCarregadasDoZip[nomeArquivoPorNome];
+              arquivoFotoUsado = nomeArquivoPorNome;
             }
-            return `
-                <div class="cartao" data-arquivo-foto="${nomeArquivoFoto || ''}">
+          }
+
+          let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
+          if (imagemSrc) {
+            fotoElemento = `<img src="${imagemSrc}" alt="Foto de ${escapeHTML(aluno.nomeAluno)}">`;
+          }
+          return `
+                <div class="cartao" data-arquivo-foto="${arquivoFotoUsado}">
                     <div class="cartao-cabecalho">E. M. ANA MARIA CORDEIRO DE SOUSA</div>
                     <div class="cartao-corpo">
                         <div class="cartao-foto-container">${fotoElemento}</div>
@@ -274,146 +495,166 @@
                 </div>`;
         }
 
-        function criarEspacadorHTML() { return `<div class="espacador-quebra-pagina"></div>`; }
+        function criarEspacadorHTML() {
+          return `<div class="espacador-quebra-pagina"></div>`;
+        }
 
         function renderizarCartoes(dadosParaRenderizar) {
-            if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
-            if (dadosParaRenderizar && dadosParaRenderizar.length > 0) {
-                let htmlConteudo = "";
-                dadosParaRenderizar.forEach((aluno, index) => {
-                    if (index > 0 && index % cartoesPorQuebraVisual === 0) { htmlConteudo += criarEspacadorHTML(); }
-                    htmlConteudo += criarCartaoHTML(aluno);
-                });
-                containerPagina.innerHTML = htmlConteudo;
-                exibirStatus(`Exibindo ${dadosParaRenderizar.length} cartões.`, 'info', 4000);
-            } else {
-                containerPagina.innerHTML = `<p style="text-align: center; padding: 20px; grid-column: 1 / -1;">Nenhum dado de aluno carregado. Use o botão "Carregar Dados (JSON)" para começar.</p>`;
-                exibirStatus(`Nenhum cartão para exibir.`, 'aviso', 4000);
-            }
+          if (!containerPagina) {
+            console.error("Elemento 'paginaCartoes' não encontrado.");
+            return;
+          }
+          if (dadosParaRenderizar && dadosParaRenderizar.length > 0) {
+            let htmlConteudo = "";
+            dadosParaRenderizar.forEach((aluno, index) => {
+              if (index > 0 && index % cartoesPorQuebraVisual === 0) {
+                htmlConteudo += criarEspacadorHTML();
+              }
+              htmlConteudo += criarCartaoHTML(aluno);
+            });
+            containerPagina.innerHTML = htmlConteudo;
+            exibirStatus(`Exibindo ${dadosParaRenderizar.length} cartões.`, "info", 4000);
+          } else {
+            containerPagina.innerHTML = `<p style="text-align: center; padding: 20px; grid-column: 1 / -1;">Nenhum dado de aluno carregado. Use o botão "Carregar Dados (JSON)" para começar.</p>`;
+            exibirStatus(`Nenhum cartão para exibir.`, "aviso", 4000);
+          }
         }
-        
+
         function atualizarExibicao() {
-            const todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
-            if (!todosOsAlunos || todosOsAlunos.length === 0) {
-                renderizarCartoes([]);
-                return;
-            }
+          const todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+          if (!todosOsAlunos || todosOsAlunos.length === 0) {
+            renderizarCartoes([]);
+            return;
+          }
 
-            const apenasComFoto = chkImprimirApenasComFoto.checked;
+          const apenasComFoto = chkImprimirApenasComFoto.checked;
 
-            if (apenasComFoto) {
-                const alunosComFoto = todosOsAlunos.filter(aluno => 
-                    aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto]
-                );
-                renderizarCartoes(alunosComFoto);
-            } else {
-                renderizarCartoes(todosOsAlunos);
-            }
+          if (apenasComFoto) {
+            const alunosComFoto = todosOsAlunos.filter((aluno) => aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto]);
+            renderizarCartoes(alunosComFoto);
+          } else {
+            renderizarCartoes(todosOsAlunos);
+          }
         }
 
         // MODIFICADO: A função `carregarDadosIniciais` agora apenas carrega do localStorage.
         // A responsabilidade de colocar os dados lá foi movida para o novo botão de upload.
         async function carregarDadosIniciais() {
-            if (!containerPagina) { console.error("Elemento 'paginaCartoes' não encontrado."); return; }
-            let dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
-            
-            if (dadosSalvosLocalmente) {
-                 console.log("Carregando dados do localStorage.");
-                 exibirStatus("Dados carregados do armazenamento local.", "info", 3000);
-            } else {
-                 console.log("Nenhum dado no localStorage. Aguardando carregamento de arquivo JSON.");
-                 exibirStatus("Pronto para carregar dados de um arquivo JSON.", "info", 6000);
-            }
-            atualizarExibicao();
+          if (!containerPagina) {
+            console.error("Elemento 'paginaCartoes' não encontrado.");
+            return;
+          }
+          let dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
+
+          if (dadosSalvosLocalmente) {
+            console.log("Carregando dados do localStorage.");
+            exibirStatus("Dados carregados do armazenamento local.", "info", 3000);
+          } else {
+            console.log("Nenhum dado no localStorage. Aguardando carregamento de arquivo JSON.");
+            exibirStatus("Pronto para carregar dados de um arquivo JSON.", "info", 6000);
+          }
+          atualizarExibicao();
         }
 
         function verificarFotosFaltantes() {
-            const dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
-            if (!dadosAtuais || dadosAtuais.length === 0) {
-                exibirStatus("Sem dados de alunos para verificar fotos.", "aviso");
-                return;
+          const dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+          if (!dadosAtuais || dadosAtuais.length === 0) {
+            exibirStatus("Sem dados de alunos para verificar fotos.", "aviso");
+            return;
+          }
+          let fotosFaltantesCount = 0;
+          const alunosSemFoto = [];
+
+          dadosAtuais.forEach((aluno) => {
+            const nomeArquivoPorId = `${aluno.id}.jpg`;
+            const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
+
+            const achouPorId = aluno.id && imagensCarregadasDoZip[nomeArquivoPorId];
+            const achouPorNome = imagensCarregadasDoZip[nomeArquivoPorNome];
+
+            if (!achouPorId && !achouPorNome) {
+              fotosFaltantesCount++;
+              alunosSemFoto.push({
+                nome: aluno.nomeAluno,
+                turma: aluno.turma,
+                id: aluno.id || "N/A",
+                arquivoEsperadoId: nomeArquivoPorId,
+                arquivoEsperadoNome: nomeArquivoPorNome,
+              });
             }
-            let fotosFaltantesCount = 0;
-            const alunosSemFoto = [];
-            dadosAtuais.forEach(aluno => {
-                if (aluno.arquivoFoto && !imagensCarregadasDoZip[aluno.arquivoFoto]) {
-                    fotosFaltantesCount++;
-                    alunosSemFoto.push({ nome: aluno.nomeAluno, turma: aluno.turma, arquivoEsperado: aluno.arquivoFoto });
-                } else if (!aluno.arquivoFoto) {
-                    fotosFaltantesCount++;
-                    alunosSemFoto.push({ nome: aluno.nomeAluno + " (sem 'arquivoFoto')", turma: aluno.turma, arquivoEsperado: "N/D" });
-                }
+          });
+          console.log("%c--- Verificação de Fotos Faltantes ---", "color: blue; font-weight: bold;");
+          if (fotosFaltantesCount > 0) {
+            const msg = `Fotos faltantes: ${fotosFaltantesCount}. Ver console para detalhes.`;
+            exibirStatus(msg, "aviso", 10000);
+            console.warn(`Total de fotos faltantes: ${fotosFaltantesCount}`);
+            console.log("Alunos sem foto correspondente ou 'arquivoFoto' não definido:");
+            alunosSemFoto.forEach((a) => {
+              console.log(`- Nome: ${a.nome}, Turma: ${a.turma}, ID: ${a.id}\n  -> Esperado: ${a.arquivoEsperadoId} (novo) ou ${a.arquivoEsperadoNome} (antigo)`);
             });
-            console.log("%c--- Verificação de Fotos Faltantes ---", "color: blue; font-weight: bold;");
-            if (fotosFaltantesCount > 0) {
-                const msg = `Fotos faltantes: ${fotosFaltantesCount}. Ver console para detalhes.`;
-                exibirStatus(msg, "aviso", 10000);
-                console.warn(`Total de fotos faltantes: ${fotosFaltantesCount}`);
-                console.log("Alunos sem foto correspondente ou 'arquivoFoto' não definido:");
-                alunosSemFoto.forEach(aluno => {
-                    console.log(`- Nome: ${aluno.nome}, Turma: ${aluno.turma}, Esperado: ${aluno.arquivoEsperado}`);
-                });
-            } else {
-                const msg = "Todas as fotos parecem estar carregadas!";
-                exibirStatus(msg, "sucesso");
-                console.log(msg);
-            }
-            console.log("------------------------------------");
+          } else {
+            const msg = "Todas as fotos parecem estar carregadas!";
+            exibirStatus(msg, "sucesso");
+            console.log(msg);
+          }
+          console.log("------------------------------------");
         }
 
         if (inputCarregarZipFotos) {
-            inputCarregarZipFotos.addEventListener('change', async function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    if (typeof JSZip === "undefined") {
-                        exibirStatus("Erro: JSZip não carregado.", "erro"); console.error("JSZip não definido.");
-                        event.target.value = null; return;
-                    }
-                    exibirStatus("Processando ZIP...", "info", 0);
-                    const zip = new JSZip();
-                    try {
-                        const carregado = await zip.loadAsync(file);
-                        let novasImagensCarregadas = {};
-                        let count = 0;
-                        const promessasArquivos = [];
-                        for (const nomeArquivoNoZip in carregado.files) {
-                            if (!carregado.files[nomeArquivoNoZip].dir) {
-                                const arquivoDoZip = carregado.files[nomeArquivoNoZip];
-                                promessasArquivos.push(
-                                    arquivoDoZip.async("blob").then(blob => {
-                                        return new Promise((resolve) => {
-                                            const reader = new FileReader();
-                                            reader.onloadend = function() {
-                                                novasImagensCarregadas[nomeArquivoNoZip] = reader.result;
-                                                count++;
-                                                resolve();
-                                            };
-                                            reader.readAsDataURL(blob);
-                                        });
-                                    })
-                                );
-                            }
-                        }                        
-                        await Promise.all(promessasArquivos);
-                        if (count > 0) {
-                            imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas };
-                            exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
-                            atualizarExibicao(); 
-                            verificarFotosFaltantes();
-                        } else {
-                            exibirStatus("Nenhuma foto encontrada no arquivo ZIP.", "aviso");
-                            verificarFotosFaltantes();
-                        }
-                    } catch (error) {
-                        console.error("Erro ao processar ZIP:", error);
-                        exibirStatus("Erro ao processar ZIP.", "erro");
-                    }
-                }
+          inputCarregarZipFotos.addEventListener("change", async function (event) {
+            const file = event.target.files[0];
+            if (file) {
+              if (typeof JSZip === "undefined") {
+                exibirStatus("Erro: JSZip não carregado.", "erro");
+                console.error("JSZip não definido.");
                 event.target.value = null;
-            });
+                return;
+              }
+              exibirStatus("Processando ZIP...", "info", 0);
+              const zip = new JSZip();
+              try {
+                const carregado = await zip.loadAsync(file);
+                let novasImagensCarregadas = {};
+                let count = 0;
+                const promessasArquivos = [];
+                for (const nomeArquivoNoZip in carregado.files) {
+                  if (!carregado.files[nomeArquivoNoZip].dir) {
+                    const arquivoDoZip = carregado.files[nomeArquivoNoZip];
+                    promessasArquivos.push(
+                      arquivoDoZip.async("blob").then((blob) => {
+                        return new Promise((resolve) => {
+                          const reader = new FileReader();
+                          reader.onloadend = function () {
+                            novasImagensCarregadas[nomeArquivoNoZip] = reader.result;
+                            count++;
+                            resolve();
+                          };
+                          reader.readAsDataURL(blob);
+                        });
+                      })
+                    );
+                  }
+                }
+                await Promise.all(promessasArquivos);
+                if (count > 0) {
+                  imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas };
+                  exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
+                  atualizarExibicao();
+                  verificarFotosFaltantes();
+                } else {
+                  exibirStatus("Nenhuma foto encontrada no arquivo ZIP.", "aviso");
+                  verificarFotosFaltantes();
+                }
+              } catch (error) {
+                console.error("Erro ao processar ZIP:", error);
+                exibirStatus("Erro ao processar ZIP.", "erro");
+              }
+            }
+            event.target.value = null;
+          });
         }
         carregarDadosIniciais();
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>
