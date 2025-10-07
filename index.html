@@ -296,6 +296,15 @@
         <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto" />
         <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
       </div>
+      <!-- NOVOS FILTROS DE TURNO -->
+      <div class="filtro-container">
+        <input type="checkbox" id="filtroMatutino" name="filtroMatutino" checked />
+        <label for="filtroMatutino">Matutino</label>
+      </div>
+      <div class="filtro-container">
+        <input type="checkbox" id="filtroVespertino" name="filtroVespertino" checked />
+        <label for="filtroVespertino">Vespertino</label>
+      </div>
     </div>
 
     <div class="pagina-container">
@@ -320,6 +329,9 @@
         const btnLimparDados = document.getElementById("limparDados");
         const statusArea = document.getElementById("statusArea");
         const chkImprimirApenasComFoto = document.getElementById("imprimirApenasComFoto");
+        // NOVOS: Referências para os filtros de turno
+        const chkFiltroMatutino = document.getElementById("filtroMatutino");
+        const chkFiltroVespertino = document.getElementById("filtroVespertino");
 
         // NOVO: Referências para os novos elementos de carregamento de JSON
         const btnCarregarJson = document.getElementById("btnCarregarJson");
@@ -349,6 +361,11 @@
 
         if (chkImprimirApenasComFoto) {
           chkImprimirApenasComFoto.addEventListener("change", atualizarExibicao);
+        }
+        // NOVOS: Adiciona listeners para os filtros de turno
+        if (chkFiltroMatutino && chkFiltroVespertino) {
+          chkFiltroMatutino.addEventListener("change", atualizarExibicao);
+          chkFiltroVespertino.addEventListener("change", atualizarExibicao);
         }
 
         if (btnLimparDados) {
@@ -443,6 +460,21 @@
           });
         }
 
+        // Função para determinar o nome do arquivo da foto para um aluno
+        function determinarArquivoFoto(aluno) {
+          // 1. Tenta pelo ID do aluno (novo método)
+          const nomeArquivoPorId = `${aluno.id}.png`;
+          if (aluno.id && imagensCarregadasDoZip[nomeArquivoPorId]) {
+            return nomeArquivoPorId;
+          }
+          // 2. Se não encontrar, tenta pelo nome do aluno (método antigo)
+          const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
+          if (imagensCarregadasDoZip[nomeArquivoPorNome]) {
+            return nomeArquivoPorNome;
+          }
+          return null;
+        }
+
         function criarCartaoHTML(aluno) {
           const escapeHTML = (str) => {
             if (typeof str !== "string") return str;
@@ -451,23 +483,8 @@
             return div.innerHTML;
           };
 
-          // Lógica híbrida para encontrar a foto
-          let imagemSrc = null;
-          let arquivoFotoUsado = "N/D";
-
-          // 1. Tenta pelo ID do aluno (novo método)
-          const nomeArquivoPorId = `${aluno.id}.jpg`;
-          if (aluno.id && imagensCarregadasDoZip[nomeArquivoPorId]) {
-            imagemSrc = imagensCarregadasDoZip[nomeArquivoPorId];
-            arquivoFotoUsado = nomeArquivoPorId;
-          } else {
-            // 2. Se não encontrar, tenta pelo nome do aluno (método antigo)
-            const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
-            if (imagensCarregadasDoZip[nomeArquivoPorNome]) {
-              imagemSrc = imagensCarregadasDoZip[nomeArquivoPorNome];
-              arquivoFotoUsado = nomeArquivoPorNome;
-            }
-          }
+          const arquivoFotoUsado = aluno.arquivoFoto || "N/D";
+          const imagemSrc = aluno.arquivoFoto ? imagensCarregadasDoZip[aluno.arquivoFoto] : null;
 
           let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
           if (imagemSrc) {
@@ -519,22 +536,35 @@
             exibirStatus(`Nenhum cartão para exibir.`, "aviso", 4000);
           }
         }
-
         function atualizarExibicao() {
-          const todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
-          if (!todosOsAlunos || todosOsAlunos.length === 0) {
+          let alunosFiltrados = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+          if (!alunosFiltrados || alunosFiltrados.length === 0) {
             renderizarCartoes([]);
             return;
           }
 
           const apenasComFoto = chkImprimirApenasComFoto.checked;
+          const filtroMatutino = chkFiltroMatutino.checked;
+          const filtroVespertino = chkFiltroVespertino.checked;
 
+          // 1. Filtro por foto
           if (apenasComFoto) {
-            const alunosComFoto = todosOsAlunos.filter((aluno) => aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto]);
-            renderizarCartoes(alunosComFoto);
-          } else {
-            renderizarCartoes(todosOsAlunos);
+            alunosFiltrados = alunosFiltrados.filter((aluno) => {
+              // A propriedade arquivoFoto agora é verificada diretamente
+              return aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto];
+            });
           }
+
+          // 2. Filtro por turno (só aplica se não forem ambos marcados ou ambos desmarcados)
+          if (filtroMatutino !== filtroVespertino) {
+            if (filtroMatutino) {
+              alunosFiltrados = alunosFiltrados.filter((aluno) => aluno.turma.toUpperCase().includes("MATUTINO"));
+            } else {
+              alunosFiltrados = alunosFiltrados.filter((aluno) => aluno.turma.toUpperCase().includes("VESPERTINO"));
+            }
+          }
+
+          renderizarCartoes(alunosFiltrados);
         }
 
         // MODIFICADO: A função `carregarDadosIniciais` agora apenas carrega do localStorage.
@@ -566,12 +596,10 @@
           const alunosSemFoto = [];
 
           dadosAtuais.forEach((aluno) => {
-            const nomeArquivoPorId = `${aluno.id}.jpg`;
+            const nomeArquivoPorId = `${aluno.id}.png`;
             const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
-
             const achouPorId = aluno.id && imagensCarregadasDoZip[nomeArquivoPorId];
             const achouPorNome = imagensCarregadasDoZip[nomeArquivoPorNome];
-
             if (!achouPorId && !achouPorNome) {
               fotosFaltantesCount++;
               alunosSemFoto.push({
@@ -638,6 +666,14 @@
                 await Promise.all(promessasArquivos);
                 if (count > 0) {
                   imagensCarregadasDoZip = { ...imagensCarregadasDoZip, ...novasImagensCarregadas };
+
+                  // Re-processa os dados para adicionar a propriedade 'arquivoFoto'
+                  let dadosAtuais = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+                  dadosAtuais.forEach((aluno) => {
+                    aluno.arquivoFoto = determinarArquivoFoto(aluno);
+                  });
+                  localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosAtuais));
+
                   exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
                   atualizarExibicao();
                   verificarFotosFaltantes();
