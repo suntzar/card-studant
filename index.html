@@ -289,6 +289,12 @@
         border-bottom: 1px solid #eee;
         padding-bottom: 3px;
       }
+      .turma-selecao-grupo .btn-marcar-turma {
+        margin-left: 10px;
+        font-size: 0.75em;
+        padding: 2px 5px;
+        cursor: pointer;
+      }
 
       /* Estilos para o alinhamento do checkbox */
       .aluno-selecao-item {
@@ -535,33 +541,57 @@
         function populateStudentSelectionBox(allStudents) {
           if (!listaAlunosSelecao) return;
 
-          listaAlunosSelecao.innerHTML = ""; // Limpa a lista anterior
+          listaAlunosSelecao.innerHTML = "";
 
-          allStudents.forEach((aluno) => {
-            const div = document.createElement("div");
-            const input = document.createElement("input");
-            input.type = "checkbox";
-            input.id = `select-aluno-${aluno.id}`;
-            input.value = aluno.id;
-            input.className = "aluno-checkbox";
-            input.checked = selectedStudentIds.has(aluno.id); // Mantém o estado de seleção
+          // Agrupa alunos por turma
+          const turmas = allStudents.reduce((acc, aluno) => {
+            const turma = aluno.turma || "Sem Turma";
+            if (!acc[turma]) {
+              acc[turma] = [];
+            }
+            acc[turma].push(aluno);
+            return acc;
+          }, {});
 
-            const label = document.createElement("label");
-            label.htmlFor = `select-aluno-${aluno.id}`;
-            label.textContent = aluno.nomeAluno;
+          // Ordena as turmas alfabeticamente
+          const turmasOrdenadas = Object.keys(turmas).sort();
 
-            div.appendChild(input);
-            div.appendChild(label);
-            listaAlunosSelecao.appendChild(div);
+          turmasOrdenadas.forEach((nomeTurma) => {
+            const grupoDiv = document.createElement("div");
+            grupoDiv.className = "turma-selecao-grupo";
 
-            input.addEventListener("change", (event) => {
-              if (event.target.checked) {
-                selectedStudentIds.add(aluno.id);
-              } else {
-                selectedStudentIds.delete(aluno.id);
-              }
-              atualizarExibicao(); // Atualiza a exibição ao mudar a seleção
+            const tituloH4 = document.createElement("h4");
+            tituloH4.textContent = nomeTurma;
+
+            const btnMarcarTurma = document.createElement("button");
+            btnMarcarTurma.textContent = "Marcar Turma";
+            btnMarcarTurma.className = "btn-marcar-turma";
+            btnMarcarTurma.onclick = () => {
+              turmas[nomeTurma].forEach((aluno) => selectedStudentIds.add(aluno.id));
+              atualizarExibicao();
+            };
+
+            tituloH4.appendChild(btnMarcarTurma);
+            grupoDiv.appendChild(tituloH4);
+
+            turmas[nomeTurma].forEach((aluno) => {
+              const itemDiv = document.createElement("div");
+              itemDiv.className = "aluno-selecao-item";
+              const input = document.createElement("input");
+              input.type = "checkbox";
+              input.id = `select-aluno-${aluno.id}`;
+              input.value = aluno.id;
+              input.className = "aluno-checkbox";
+              input.checked = selectedStudentIds.has(aluno.id);
+
+              const label = document.createElement("label");
+              label.htmlFor = `select-aluno-${aluno.id}`;
+              label.textContent = aluno.nomeAluno;
+
+              itemDiv.append(input, label);
+              grupoDiv.appendChild(itemDiv);
             });
+            listaAlunosSelecao.appendChild(grupoDiv);
           });
 
           // Atualiza o estado do checkbox "Marcar/Desmarcar Todos"
@@ -660,7 +690,7 @@
         // Função para determinar o nome do arquivo da foto para um aluno
         function determinarArquivoFoto(aluno) {
           // 1. Tenta pelo ID do aluno (novo método)
-          const nomeArquivoPorId = `${aluno.id}.png`;
+          const nomeArquivoPorId = `${aluno.id}.jpg`;
           if (aluno.id && imagensCarregadasDoZip[nomeArquivoPorId]) {
             return nomeArquivoPorId;
           }
@@ -755,11 +785,13 @@
             return;
           }
 
-          // Popula a caixa de seleção com todos os alunos
-          populateStudentSelectionBox(todosOsAlunos);
-
           // Filtra os alunos para exibição com base nos IDs selecionados
           let alunosParaExibir = todosOsAlunos.filter((aluno) => selectedStudentIds.has(aluno.id));
+
+          // Popula a caixa de seleção com todos os alunos, mas depois de filtrar
+          // para que os checkboxes reflitam o estado atual.
+          // A função de popular agora também lida com a atualização dos checkboxes.
+          populateStudentSelectionBox(todosOsAlunos);
 
           renderizarCartoes(alunosParaExibir);
         }
@@ -781,8 +813,7 @@
             if (selectedStudentIds.size === 0 && todosOsAlunos.length > 0) {
               todosOsAlunos.forEach((aluno) => selectedStudentIds.add(aluno.id));
             }
-            populateStudentSelectionBox(todosOsAlunos); // Popula a caixa de seleção
-            atualizarExibicao(); // Em seguida, atualiza a exibição
+            atualizarExibicao();
           } else {
             console.log("Nenhum dado no localStorage. Aguardando carregamento de arquivo JSON.");
             exibirStatus("Pronto para carregar dados de um arquivo JSON.", "info", 6000);
@@ -801,7 +832,7 @@
           const alunosSemFoto = [];
 
           dadosAtuais.forEach((aluno) => {
-            const nomeArquivoPorId = `${aluno.id}.png`;
+            const nomeArquivoPorId = `${aluno.id}.jpg`;
             const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
             const achouPorId = aluno.id && imagensCarregadasDoZip[nomeArquivoPorId];
             const achouPorNome = imagensCarregadasDoZip[nomeArquivoPorNome];
