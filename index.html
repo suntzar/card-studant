@@ -279,37 +279,122 @@
       .filtro-container input {
         cursor: pointer;
       }
+      /* NOVO: Estilos para a caixa de seleção flutuante */
+      .selecao-flutuante {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 250px; /* Largura padrão */
+        max-height: 80vh; /* Altura máxima para não cobrir a tela toda */
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; /* Esconde o conteúdo quando minimizado */
+        transition: all 0.3s ease-in-out; /* Transição suave para minimizar/maximizar */
+      }
+
+      .selecao-flutuante-minimized {
+        width: 250px; /* Mantém a largura */
+        height: 40px; /* Altura apenas do cabeçalho */
+        overflow: hidden;
+      }
+
+      .selecao-flutuante-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background-color: #f0f0f0;
+        border-bottom: 1px solid #eee;
+        cursor: pointer; /* Indica que o cabeçalho é clicável */
+      }
+
+      .selecao-flutuante-header h3 {
+        margin: 0;
+        font-size: 1em;
+        color: #333;
+      }
+
+      .selecao-flutuante-header .toggle-button {
+        background: none;
+        border: none;
+        font-size: 1.2em;
+        cursor: pointer;
+        padding: 0 5px;
+        color: #555;
+      }
+
+      .selecao-flutuante-body {
+        padding: 10px;
+        flex-grow: 1;
+        overflow-y: auto; /* Scroll para a lista de alunos */
+      }
+
+      .lista-alunos-selecao {
+        max-height: 300px; /* Altura máxima para a lista de alunos */
+        overflow-y: auto;
+        border: 1px solid #eee;
+        padding: 5px;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+      }
+
+      .lista-alunos-selecao label {
+        display: block; /* Cada aluno em uma nova linha */
+        margin-bottom: 3px;
+        font-size: 0.85em;
+        cursor: pointer;
+      }
+
+      .lista-alunos-selecao input[type="checkbox"] {
+        margin-right: 5px;
+      }
     </style>
   </head>
   <body>
     <div class="controles-pagina no-print">
       <button onclick="window.print()">Imprimir Cartões</button>
       <button id="limparDados">Limpar Dados & Fotos</button>
-      <!-- NOVO: Botão para carregar dados JSON e input de arquivo oculto -->
+      <!-- Botão para carregar dados JSON e input de arquivo oculto -->
       <button id="btnCarregarJson">Carregar Dados (JSON)</button>
       <input type="file" id="inputCarregarJson" accept=".json,application/json" style="display: none" />
 
       <label for="inputCarregarZipFotos" class="upload-zip-label">Carregar ZIP de Fotos</label>
       <input type="file" id="inputCarregarZipFotos" accept=".zip" style="display: none" />
-
-      <div class="filtro-container">
-        <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto" />
-        <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
-      </div>
-      <!-- NOVOS FILTROS DE TURNO -->
-      <div class="filtro-container">
-        <input type="checkbox" id="filtroMatutino" name="filtroMatutino" checked />
-        <label for="filtroMatutino">Matutino</label>
-      </div>
-      <div class="filtro-container">
-        <input type="checkbox" id="filtroVespertino" name="filtroVespertino" checked />
-        <label for="filtroVespertino">Vespertino</label>
-      </div>
     </div>
 
     <div class="pagina-container">
       <div class="pagina" id="paginaCartoes">
         <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+      </div>
+    </div>
+
+    <!-- NOVO: Caixa de seleção flutuante para alunos -->
+    <div id="selecaoAlunosFlutuante" class="no-print selecao-flutuante selecao-flutuante-minimized">
+      <div class="selecao-flutuante-header">
+        <h3>Seleção de Alunos</h3>
+        <button id="toggleSelecaoFlutuante" class="toggle-button">+</button>
+      </div>
+      <div class="selecao-flutuante-body">
+        <div class="filtro-container">
+          <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto" />
+          <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
+        </div>
+        <div class="filtro-container">
+          <input type="checkbox" id="filtroMatutino" name="filtroMatutino" checked />
+          <label for="filtroMatutino">Matutino</label>
+        </div>
+        <div class="filtro-container">
+          <input type="checkbox" id="filtroVespertino" name="filtroVespertino" checked />
+          <label for="filtroVespertino">Vespertino</label>
+        </div>
+        <hr />
+        <div class="filtro-container"><input type="checkbox" id="selecionarTodosAlunos" name="selecionarTodosAlunos" checked /><label for="selecionarTodosAlunos">Marcar/Desmarcar Todos</label></div>
+        <div id="listaAlunosSelecao" class="lista-alunos-selecao"></div>
       </div>
     </div>
 
@@ -326,14 +411,19 @@
       document.addEventListener("DOMContentLoaded", function () {
         const containerPagina = document.getElementById("paginaCartoes");
         const inputCarregarZipFotos = document.getElementById("inputCarregarZipFotos");
-        const btnLimparDados = document.getElementById("limparDados");
-        const statusArea = document.getElementById("statusArea");
-        const chkImprimirApenasComFoto = document.getElementById("imprimirApenasComFoto");
-        // NOVOS: Referências para os filtros de turno
-        const chkFiltroMatutino = document.getElementById("filtroMatutino");
-        const chkFiltroVespertino = document.getElementById("filtroVespertino");
+        const btnLimparDados = document.getElementById("limparDados"); // Mantido aqui, mas não é um filtro
+        const statusArea = document.getElementById("statusArea"); // Mantido aqui
 
-        // NOVO: Referências para os novos elementos de carregamento de JSON
+        // NOVOS: Referências para os elementos da caixa flutuante
+        const selecaoAlunosFlutuante = document.getElementById("selecaoAlunosFlutuante");
+        const toggleSelecaoFlutuante = document.getElementById("toggleSelecaoFlutuante");
+        const listaAlunosSelecao = document.getElementById("listaAlunosSelecao");
+        const selecionarTodosAlunos = document.getElementById("selecionarTodosAlunos");
+        const chkImprimirApenasComFoto = document.getElementById("imprimirApenasComFoto"); // Agora dentro da caixa flutuante
+        const chkFiltroMatutino = document.getElementById("filtroMatutino"); // Agora dentro da caixa flutuante
+        const chkFiltroVespertino = document.getElementById("filtroVespertino"); // Agora dentro da caixa flutuante
+
+        // Referências para os elementos de carregamento de JSON
         const btnCarregarJson = document.getElementById("btnCarregarJson");
         const inputCarregarJson = document.getElementById("inputCarregarJson");
 
@@ -341,17 +431,19 @@
         const cartoesPorQuebraVisual = 8;
         let imagensCarregadasDoZip = {};
         let statusTimeout;
+        let selectedStudentIds = new Set(); // NOVO: Armazena os IDs dos alunos selecionados
 
         function exibirStatus(mensagem, tipo = "info", duracao = 5000) {
           if (!statusArea) return;
           statusArea.textContent = mensagem;
           statusArea.style.opacity = "1";
           let corFundo = "#333";
-          if (tipo === "sucesso") corFundo = "#27ae60";
-          else if (tipo === "erro") corFundo = "#c0392b";
-          else if (tipo === "aviso") corFundo = "#f39c12";
+          if (tipo === "sucesso") corFundo = "#27ae60"; // Verde
+          else if (tipo === "erro") corFundo = "#c0392b"; // Vermelho
+          else if (tipo === "aviso") corFundo = "#f39c12"; // Laranja
           statusArea.style.backgroundColor = corFundo;
           clearTimeout(statusTimeout);
+          // Se duracao for 0, a mensagem permanece até ser substituída
           if (duracao > 0) {
             statusTimeout = setTimeout(() => {
               statusArea.style.opacity = "0";
@@ -359,13 +451,31 @@
           }
         }
 
+        // NOVO: Event listeners para os filtros dentro da caixa flutuante
         if (chkImprimirApenasComFoto) {
           chkImprimirApenasComFoto.addEventListener("change", atualizarExibicao);
         }
-        // NOVOS: Adiciona listeners para os filtros de turno
-        if (chkFiltroMatutino && chkFiltroVespertino) {
+        if (chkFiltroMatutino) {
           chkFiltroMatutino.addEventListener("change", atualizarExibicao);
+        }
+        if (chkFiltroVespertino) {
           chkFiltroVespertino.addEventListener("change", atualizarExibicao);
+        }
+
+        // NOVO: Lógica para minimizar/maximizar a caixa flutuante
+        if (toggleSelecaoFlutuante && selecaoAlunosFlutuante) {
+          toggleSelecaoFlutuante.addEventListener("click", () => {
+            selecaoAlunosFlutuante.classList.toggle("selecao-flutuante-minimized");
+            toggleSelecaoFlutuante.textContent = selecaoAlunosFlutuante.classList.contains("selecao-flutuante-minimized") ? "+" : "_";
+          });
+        }
+
+        // NOVO: Event listener para o checkbox "Marcar/Desmarcar Todos"
+        if (selecionarTodosAlunos) {
+          selecionarTodosAlunos.addEventListener("change", (event) => {
+            const isChecked = event.target.checked;
+            marcarDesmarcarTodosAlunos(isChecked);
+          });
         }
 
         if (btnLimparDados) {
@@ -375,6 +485,45 @@
             exibirStatus("Dados locais e fotos em memória limpos. Recarregando...", "info");
             setTimeout(() => window.location.reload(), 1500);
           });
+        }
+
+        // NOVO: Função para popular a lista de seleção de alunos
+        function populateStudentSelectionBox(allStudents) {
+          if (!listaAlunosSelecao) return;
+
+          listaAlunosSelecao.innerHTML = ""; // Limpa a lista anterior
+
+          allStudents.forEach((aluno) => {
+            const div = document.createElement("div");
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.id = `select-aluno-${aluno.id}`;
+            input.value = aluno.id;
+            input.className = "aluno-checkbox";
+            input.checked = selectedStudentIds.has(aluno.id); // Mantém o estado de seleção
+
+            const label = document.createElement("label");
+            label.htmlFor = `select-aluno-${aluno.id}`;
+            label.textContent = aluno.nomeAluno;
+
+            div.appendChild(input);
+            div.appendChild(label);
+            listaAlunosSelecao.appendChild(div);
+
+            input.addEventListener("change", (event) => {
+              if (event.target.checked) {
+                selectedStudentIds.add(aluno.id);
+              } else {
+                selectedStudentIds.delete(aluno.id);
+              }
+              atualizarExibicao(); // Atualiza a exibição ao mudar a seleção
+            });
+          });
+
+          // Atualiza o estado do checkbox "Marcar/Desmarcar Todos"
+          if (selecionarTodosAlunos) {
+            selecionarTodosAlunos.checked = allStudents.length > 0 && selectedStudentIds.size === allStudents.length;
+          }
         }
 
         // Função para converter string para Title Case, preservando numerais romanos
@@ -442,7 +591,11 @@
                 localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosProcessados));
                 exibirStatus(`Sucesso! ${dadosProcessados.length} registros carregados e processados.`, "sucesso");
 
-                // Atualiza a exibição com os novos dados
+                // NOVO: Após carregar novos dados, reinicializa selectedStudentIds para incluir todos os novos alunos
+                selectedStudentIds.clear();
+                dadosProcessados.forEach((aluno) => selectedStudentIds.add(aluno.id));
+
+                populateStudentSelectionBox(dadosProcessados); // Popula a caixa de seleção
                 atualizarExibicao();
               } catch (error) {
                 console.error("Erro ao processar o arquivo JSON:", error);
@@ -536,35 +689,60 @@
             exibirStatus(`Nenhum cartão para exibir.`, "aviso", 4000);
           }
         }
+
+        // NOVO: Função para marcar/desmarcar todos os alunos na lista de seleção
+        function marcarDesmarcarTodosAlunos(checked) {
+          const alunoCheckboxes = document.querySelectorAll(".aluno-checkbox");
+          selectedStudentIds.clear(); // Limpa a seleção atual
+
+          alunoCheckboxes.forEach((checkbox) => {
+            checkbox.checked = checked;
+            if (checked) {
+              selectedStudentIds.add(checkbox.value);
+            }
+          });
+          atualizarExibicao(); // Atualiza a exibição após a mudança
+        }
+
         function atualizarExibicao() {
-          let alunosFiltrados = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
-          if (!alunosFiltrados || alunosFiltrados.length === 0) {
+          let todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+          if (!todosOsAlunos || todosOsAlunos.length === 0) {
             renderizarCartoes([]);
+            populateStudentSelectionBox([]); // Limpa a caixa de seleção
             return;
           }
 
-          const apenasComFoto = chkImprimirApenasComFoto.checked;
-          const filtroMatutino = chkFiltroMatutino.checked;
-          const filtroVespertino = chkFiltroVespertino.checked;
+          // NOVO: Se selectedStudentIds estiver vazio e houver alunos, seleciona todos por padrão
+          if (selectedStudentIds.size === 0 && todosOsAlunos.length > 0) {
+            todosOsAlunos.forEach((aluno) => selectedStudentIds.add(aluno.id));
+          }
 
-          // 1. Filtro por foto
+          // NOVO: Popula a caixa de seleção com todos os alunos (antes de aplicar os filtros para exibição)
+          populateStudentSelectionBox(todosOsAlunos);
+
+          // 1. Filtro pela seleção manual (alunos marcados na caixa flutuante)
+          let alunosParaExibir = todosOsAlunos.filter((aluno) => selectedStudentIds.has(aluno.id));
+
+          // 2. Filtro por foto (se o checkbox estiver marcado)
+          const apenasComFoto = document.getElementById("imprimirApenasComFoto").checked;
           if (apenasComFoto) {
-            alunosFiltrados = alunosFiltrados.filter((aluno) => {
-              // A propriedade arquivoFoto agora é verificada diretamente
+            alunosParaExibir = alunosParaExibir.filter((aluno) => {
               return aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto];
             });
           }
 
-          // 2. Filtro por turno (só aplica se não forem ambos marcados ou ambos desmarcados)
+          // 3. Filtro por turno (só aplica se não forem ambos marcados ou ambos desmarcados)
+          const filtroMatutino = document.getElementById("filtroMatutino").checked;
+          const filtroVespertino = document.getElementById("filtroVespertino").checked;
           if (filtroMatutino !== filtroVespertino) {
             if (filtroMatutino) {
-              alunosFiltrados = alunosFiltrados.filter((aluno) => aluno.turma.toUpperCase().includes("MATUTINO"));
+              alunosParaExibir = alunosParaExibir.filter((aluno) => aluno.turma.toUpperCase().includes("MATUTINO"));
             } else {
-              alunosFiltrados = alunosFiltrados.filter((aluno) => aluno.turma.toUpperCase().includes("VESPERTINO"));
+              alunosParaExibir = alunosParaExibir.filter((aluno) => aluno.turma.toUpperCase().includes("VESPERTINO"));
             }
           }
 
-          renderizarCartoes(alunosFiltrados);
+          renderizarCartoes(alunosParaExibir);
         }
 
         // MODIFICADO: A função `carregarDadosIniciais` agora apenas carrega do localStorage.
@@ -577,13 +755,21 @@
           let dadosSalvosLocalmente = localStorage.getItem(chaveLocalStorage);
 
           if (dadosSalvosLocalmente) {
+            const todosOsAlunos = JSON.parse(dadosSalvosLocalmente);
             console.log("Carregando dados do localStorage.");
             exibirStatus("Dados carregados do armazenamento local.", "info", 3000);
+            // NOVO: Inicializa selectedStudentIds com todos os IDs se ainda não estiver populado
+            if (selectedStudentIds.size === 0 && todosOsAlunos.length > 0) {
+              todosOsAlunos.forEach((aluno) => selectedStudentIds.add(aluno.id));
+            }
+            populateStudentSelectionBox(todosOsAlunos); // Popula a caixa de seleção
+            atualizarExibicao(); // Em seguida, atualiza a exibição
           } else {
             console.log("Nenhum dado no localStorage. Aguardando carregamento de arquivo JSON.");
             exibirStatus("Pronto para carregar dados de um arquivo JSON.", "info", 6000);
+            renderizarCartoes([]); // Limpa os cartões se não houver dados
+            populateStudentSelectionBox([]); // Limpa a caixa de seleção
           }
-          atualizarExibicao();
         }
 
         function verificarFotosFaltantes() {
@@ -674,6 +860,8 @@
                   });
                   localStorage.setItem(chaveLocalStorage, JSON.stringify(dadosAtuais));
 
+                  // NOVO: Após atualizar as informações da foto, repopula a caixa de seleção e atualiza a exibição
+                  populateStudentSelectionBox(dadosAtuais);
                   exibirStatus(`${count} fotos processadas do ZIP! Atualizando...`, "sucesso");
                   atualizarExibicao();
                   verificarFotosFaltantes();
