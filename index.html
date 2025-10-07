@@ -280,6 +280,36 @@
         cursor: pointer;
       }
       /* NOVO: Estilos para a caixa de seleção flutuante */
+      /* Estilos para o agrupamento por turma */
+      .lista-alunos-selecao h4 {
+        margin-top: 10px;
+        margin-bottom: 5px;
+        font-size: 0.9em;
+        color: #555;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 3px;
+      }
+
+      /* Estilos para o alinhamento do checkbox */
+      .aluno-selecao-item {
+        display: flex; /* Usa flexbox para alinhar checkbox e label */
+        align-items: center; /* Centraliza verticalmente */
+        margin-bottom: 3px; /* Espaçamento entre os itens de aluno */
+      }
+
+      .aluno-selecao-item label {
+        margin-bottom: 0; /* Remove a margem inferior padrão do label */
+      }
+
+      .botoes-selecao {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+      }
+
       .selecao-flutuante {
         position: fixed;
         top: 10px;
@@ -344,7 +374,7 @@
       }
 
       .lista-alunos-selecao label {
-        display: block; /* Cada aluno em uma nova linha */
+        /* display: block; Removido para permitir flexbox no item */
         margin-bottom: 3px;
         font-size: 0.85em;
         cursor: pointer;
@@ -380,20 +410,15 @@
         <button id="toggleSelecaoFlutuante" class="toggle-button">+</button>
       </div>
       <div class="selecao-flutuante-body">
-        <div class="filtro-container">
-          <input type="checkbox" id="imprimirApenasComFoto" name="imprimirApenasComFoto" />
-          <label for="imprimirApenasComFoto">Imprimir apenas com foto</label>
+        <div class="botoes-selecao">
+          <button id="btnSelecionarMatutino">Selecionar Matutino</button>
+          <button id="btnSelecionarVespertino">Selecionar Vespertino</button>
+          <button id="btnDesmarcarTodos">Desmarcar Todos</button>
         </div>
         <div class="filtro-container">
-          <input type="checkbox" id="filtroMatutino" name="filtroMatutino" checked />
-          <label for="filtroMatutino">Matutino</label>
+          <input type="checkbox" id="selecionarTodosAlunos" name="selecionarTodosAlunos" checked />
+          <label for="selecionarTodosAlunos">Marcar/Desmarcar Visíveis</label>
         </div>
-        <div class="filtro-container">
-          <input type="checkbox" id="filtroVespertino" name="filtroVespertino" checked />
-          <label for="filtroVespertino">Vespertino</label>
-        </div>
-        <hr />
-        <div class="filtro-container"><input type="checkbox" id="selecionarTodosAlunos" name="selecionarTodosAlunos" checked /><label for="selecionarTodosAlunos">Marcar/Desmarcar Todos</label></div>
         <div id="listaAlunosSelecao" class="lista-alunos-selecao"></div>
       </div>
     </div>
@@ -418,14 +443,16 @@
         const selecaoAlunosFlutuante = document.getElementById("selecaoAlunosFlutuante");
         const toggleSelecaoFlutuante = document.getElementById("toggleSelecaoFlutuante");
         const listaAlunosSelecao = document.getElementById("listaAlunosSelecao");
-        const selecionarTodosAlunos = document.getElementById("selecionarTodosAlunos");
-        const chkImprimirApenasComFoto = document.getElementById("imprimirApenasComFoto"); // Agora dentro da caixa flutuante
-        const chkFiltroMatutino = document.getElementById("filtroMatutino"); // Agora dentro da caixa flutuante
-        const chkFiltroVespertino = document.getElementById("filtroVespertino"); // Agora dentro da caixa flutuante
 
         // Referências para os elementos de carregamento de JSON
         const btnCarregarJson = document.getElementById("btnCarregarJson");
         const inputCarregarJson = document.getElementById("inputCarregarJson");
+
+        // NOVOS: Botões de ação para seleção
+        const btnSelecionarMatutino = document.getElementById("btnSelecionarMatutino");
+        const btnSelecionarVespertino = document.getElementById("btnSelecionarVespertino");
+        const btnDesmarcarTodos = document.getElementById("btnDesmarcarTodos");
+        const chkSelecionarTodos = document.getElementById("selecionarTodosAlunos");
 
         const chaveLocalStorage = "dadosCartoesEscolaresUnificados";
         const cartoesPorQuebraVisual = 8;
@@ -451,17 +478,6 @@
           }
         }
 
-        // NOVO: Event listeners para os filtros dentro da caixa flutuante
-        if (chkImprimirApenasComFoto) {
-          chkImprimirApenasComFoto.addEventListener("change", atualizarExibicao);
-        }
-        if (chkFiltroMatutino) {
-          chkFiltroMatutino.addEventListener("change", atualizarExibicao);
-        }
-        if (chkFiltroVespertino) {
-          chkFiltroVespertino.addEventListener("change", atualizarExibicao);
-        }
-
         // NOVO: Lógica para minimizar/maximizar a caixa flutuante
         if (toggleSelecaoFlutuante && selecaoAlunosFlutuante) {
           toggleSelecaoFlutuante.addEventListener("click", () => {
@@ -470,13 +486,41 @@
           });
         }
 
-        // NOVO: Event listener para o checkbox "Marcar/Desmarcar Todos"
-        if (selecionarTodosAlunos) {
-          selecionarTodosAlunos.addEventListener("change", (event) => {
-            const isChecked = event.target.checked;
-            marcarDesmarcarTodosAlunos(isChecked);
+        // Lógica para os novos botões de seleção
+        if (btnSelecionarMatutino) {
+          btnSelecionarMatutino.addEventListener("click", () => selecionarAlunosPorTurno("MATUTINO"));
+        }
+        if (btnSelecionarVespertino) {
+          btnSelecionarVespertino.addEventListener("click", () => selecionarAlunosPorTurno("VESPERTINO"));
+        }
+        if (btnDesmarcarTodos) {
+          btnDesmarcarTodos.addEventListener("click", () => {
+            selectedStudentIds.clear();
+            atualizarExibicao();
           });
         }
+
+        // Lógica para o checkbox "Marcar/Desmarcar Visíveis"
+        if (chkSelecionarTodos) {
+          chkSelecionarTodos.addEventListener("change", (event) => {
+            const isChecked = event.target.checked;
+            const checkboxesVisiveis = listaAlunosSelecao.querySelectorAll(".aluno-checkbox");
+            checkboxesVisiveis.forEach((checkbox) => {
+              checkbox.checked = isChecked;
+              if (isChecked) {
+                selectedStudentIds.add(checkbox.value);
+              } else {
+                selectedStudentIds.delete(checkbox.value);
+              }
+            });
+            atualizarExibicao();
+          });
+        }
+
+        // Event listener para os checkboxes individuais de alunos
+        listaAlunosSelecao.addEventListener("change", (event) => {
+          if (event.target.classList.contains("aluno-checkbox")) atualizarExibicao();
+        });
 
         if (btnLimparDados) {
           btnLimparDados.addEventListener("click", function () {
@@ -521,11 +565,11 @@
           });
 
           // Atualiza o estado do checkbox "Marcar/Desmarcar Todos"
-          if (selecionarTodosAlunos) {
-            selecionarTodosAlunos.checked = allStudents.length > 0 && selectedStudentIds.size === allStudents.length;
+          if (chkSelecionarTodos) {
+            const allVisibleChecked = allStudents.length > 0 && allStudents.every((aluno) => selectedStudentIds.has(aluno.id));
+            chkSelecionarTodos.checked = allVisibleChecked;
           }
         }
-
         // Função para converter string para Title Case, preservando numerais romanos
         function toTitleCase(str) {
           return str
@@ -690,57 +734,32 @@
           }
         }
 
-        // NOVO: Função para marcar/desmarcar todos os alunos na lista de seleção
-        function marcarDesmarcarTodosAlunos(checked) {
-          const alunoCheckboxes = document.querySelectorAll(".aluno-checkbox");
-          selectedStudentIds.clear(); // Limpa a seleção atual
+        function selecionarAlunosPorTurno(turno) {
+          const todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
+          if (!todosOsAlunos || todosOsAlunos.length === 0) return;
 
-          alunoCheckboxes.forEach((checkbox) => {
-            checkbox.checked = checked;
-            if (checked) {
-              selectedStudentIds.add(checkbox.value);
+          selectedStudentIds.clear();
+          todosOsAlunos.forEach((aluno) => {
+            if (aluno.turma.toUpperCase().includes(turno)) {
+              selectedStudentIds.add(aluno.id);
             }
           });
-          atualizarExibicao(); // Atualiza a exibição após a mudança
+          atualizarExibicao();
         }
 
         function atualizarExibicao() {
           let todosOsAlunos = JSON.parse(localStorage.getItem(chaveLocalStorage) || "[]");
           if (!todosOsAlunos || todosOsAlunos.length === 0) {
             renderizarCartoes([]);
-            populateStudentSelectionBox([]); // Limpa a caixa de seleção
+            populateStudentSelectionBox([]);
             return;
           }
 
-          // NOVO: Se selectedStudentIds estiver vazio e houver alunos, seleciona todos por padrão
-          if (selectedStudentIds.size === 0 && todosOsAlunos.length > 0) {
-            todosOsAlunos.forEach((aluno) => selectedStudentIds.add(aluno.id));
-          }
-
-          // NOVO: Popula a caixa de seleção com todos os alunos (antes de aplicar os filtros para exibição)
+          // Popula a caixa de seleção com todos os alunos
           populateStudentSelectionBox(todosOsAlunos);
 
-          // 1. Filtro pela seleção manual (alunos marcados na caixa flutuante)
+          // Filtra os alunos para exibição com base nos IDs selecionados
           let alunosParaExibir = todosOsAlunos.filter((aluno) => selectedStudentIds.has(aluno.id));
-
-          // 2. Filtro por foto (se o checkbox estiver marcado)
-          const apenasComFoto = document.getElementById("imprimirApenasComFoto").checked;
-          if (apenasComFoto) {
-            alunosParaExibir = alunosParaExibir.filter((aluno) => {
-              return aluno.arquivoFoto && imagensCarregadasDoZip[aluno.arquivoFoto];
-            });
-          }
-
-          // 3. Filtro por turno (só aplica se não forem ambos marcados ou ambos desmarcados)
-          const filtroMatutino = document.getElementById("filtroMatutino").checked;
-          const filtroVespertino = document.getElementById("filtroVespertino").checked;
-          if (filtroMatutino !== filtroVespertino) {
-            if (filtroMatutino) {
-              alunosParaExibir = alunosParaExibir.filter((aluno) => aluno.turma.toUpperCase().includes("MATUTINO"));
-            } else {
-              alunosParaExibir = alunosParaExibir.filter((aluno) => aluno.turma.toUpperCase().includes("VESPERTINO"));
-            }
-          }
 
           renderizarCartoes(alunosParaExibir);
         }
