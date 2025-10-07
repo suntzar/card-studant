@@ -833,6 +833,7 @@
 
           dadosAtuais.forEach((aluno) => {
             const nomeArquivoPorId = `${aluno.id}.jpg`;
+            console.log(`${aluno.nomeAluno}\n${aluno.id}.jpg`);
             const nomeArquivoPorNome = `${aluno.nomeAluno.toLowerCase().replace(/\s+/g, "_")}.jpg`;
             const achouPorId = aluno.id && imagensCarregadasDoZip[nomeArquivoPorId];
             const achouPorNome = imagensCarregadasDoZip[nomeArquivoPorNome];
