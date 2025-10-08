@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matriz - Cartões Escolares</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --cartao-largura-base: 86mm;
+        --cartao-altura-base: 54mm;
+        --fator-escala-visual: 1.03;
+
+        --cor-cabecalho-fundo: #3351e0;
+        --cor-cabecalho-texto: #fff;
+        --cor-foto-fundo: #f4b544;
+        --cor-foto-texto: #fff;
+        --cor-info-texto: #333;
+        --cor-rodape-base-fundo: #3aa44a;
+        --cor-rodape-info-texto: #fff;
+        --cor-cartao-fundo: #fff;
+        --cor-borda-corte: #777;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #e4e1d8;
+        padding: 20px 0;
+        font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .pagina-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .pagina {
+        background-color: white;
+        width: 210mm;
+        min-height: 297mm;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-content: flex-start;
+        padding: 12mm;
+        column-gap: calc((210mm - 2 * 12mm - 2 * (var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
+        row-gap: 15mm;
+        align-items: start;
+        justify-items: center;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          background-color: white;
+          padding: 0;
+          margin: 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .pagina-container {
+          gap: 0;
+        }
+        .pagina {
+          margin: 0;
+          box-shadow: none;
+          width: 210mm;
+          height: auto;
+          min-height: 0;
+          padding: 12mm;
+          overflow: visible !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .espacador-quebra-pagina {
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+        }
+        .cartao {
+          box-shadow: none !important;
+          border: 0.5pt dashed var(--cor-borda-corte) !important;
+        }
+        .cartao-foto-container img {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      .cartao {
+        width: var(--cartao-largura-base);
+        height: var(--cartao-altura-base);
+        transform: scale(var(--fator-escala-visual));
+        transform-origin: center center;
+        border-radius: 5mm;
+        border: 0.5pt dashed #aaa;
+        background: var(--cor-cartao-fundo);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        page-break-inside: avoid !important;
+      }
+      .cartao-cabecalho {
+        background-color: var(--cor-cabecalho-fundo);
+        padding: 3mm;
+        color: var(--cor-cabecalho-texto);
+        text-align: center;
+        font-size: 9.5pt;
+        font-weight: 700;
+        flex-shrink: 0;
+        z-index: 1;
+      }
+      .cartao-corpo {
+        display: flex;
+        padding: 3mm;
+        flex-grow: 1;
+        z-index: 0;
+      }
+      .cartao-foto-container {
+        flex: 0 0 23mm;
+        height: 23mm;
+        background-color: var(--cor-foto-fundo);
+        border-radius: 2.5mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cor-foto-texto);
+        font-size: 8.5pt;
+        font-weight: 700;
+        margin-right: 4mm;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 1mm solid var(--cor-foto-fundo);
+      }
+      .cartao-foto-container .foto-placeholder-texto {
+        font-size: 8.5pt;
+        font-weight: 700;
+        color: var(--cor-foto-texto);
+      }
+      .cartao-info {
+        flex: 1;
+        color: var(--cor-info-texto);
+        font-size: 7.5pt;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: 400;
+      }
+      .cartao-info p {
+        margin-bottom: 1mm;
+        line-height: 1.3;
+      }
+      .cartao-info strong {
+        font-weight: 700;
+      }
+      .cartao-rodape-base {
+        width: 45mm;
+        background-color: var(--cor-rodape-base-fundo);
+        color: var(--cor-rodape-info-texto);
+        padding: 4mm;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 0;
+        border-radius: 0 5mm 0 0;
+      }
+      .rodape-info-professor {
+        font-size: 7.5pt;
+        font-weight: 400;
+        line-height: 1.3;
+      }
+      .rodape-info-professor strong {
+        font-weight: 700;
+      }
+      .rodape-logo-flutuante {
+        position: absolute;
+        bottom: 3mm;
+        right: 4mm;
+        z-index: 1;
+      }
+      .rodape-logo-flutuante img {
+        max-width: 20mm;
+        max-height: 14mm;
+        height: auto;
+        display: block;
+      }
+      .espacador-quebra-pagina {
+        grid-column: 1 / -1;
+        height: 1px;
+        page-break-before: always !important;
+      }
+      .controles-pagina {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      .controles-pagina button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        background-color: #6c757d;
+        color: white;
+      }
+      .controles-pagina button:hover {
+        background-color: #5a6268;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="controles-pagina no-print">
+      <button onclick="window.print()">Imprimir Cartões</button>
+    </div>
+
+    <div class="pagina-container">
+      <div class="pagina" id="paginaCartoes">
+        <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const containerPagina = document.getElementById("paginaCartoes");
+        const cartoesPorQuebraVisual = 8;
+
+        // Dados simulados (mock)
+        const mockAlunos = [
+          { nomeAluno: "Aluno de Exemplo Um", responsavel: "Responsável Um", professora: "Ana", turma: "Infantil I - Matutino" },
+          { nomeAluno: "Aluna de Exemplo Dois", responsavel: "Responsável Dois", professora: "Ana", turma: "Infantil I - Matutino" },
+          { nomeAluno: "Aluno de Exemplo Três", responsavel: "Responsável Três", professora: "Lídia", turma: "1º Ano - Matutino" },
+          { nomeAluno: "Aluna de Exemplo Quatro", responsavel: "Responsável Quatro", professora: "Lídia", turma: "1º Ano - Matutino" },
+          { nomeAluno: "Aluno de Exemplo Cinco", responsavel: "Responsável Cinco", professora: "Vanessa", turma: "Creche III - Vespertino" },
+          { nomeAluno: "Aluna de Exemplo Seis", responsavel: "Responsável Seis", professora: "Vanessa", turma: "Creche III - Vespertino" },
+          { nomeAluno: "Aluno de Exemplo Sete", responsavel: "Responsável Sete", professora: "Linda", turma: "Infantil I - Vespertino" },
+          { nomeAluno: "Aluna de Exemplo Oito", responsavel: "Responsável Oito", professora: "Linda", turma: "Infantil I - Vespertino" },
+          { nomeAluno: "Aluno de Exemplo Nove", responsavel: "Responsável Nove", professora: "Elem", turma: "Infantil II - Vespertino" },
+          { nomeAluno: "Aluna de Exemplo Dez", responsavel: "Responsável Dez", professora: "Elem", turma: "Infantil II - Vespertino" },
+        ];
+
+        function criarCartaoHTML(aluno) {
+          let fotoElemento = '<div class="foto-placeholder-texto">FOTO</div>';
+
+          return `
+            <div class="cartao">
+                <div class="cartao-cabecalho">E. M. ANA MARIA CORDEIRO DE SOUSA</div>
+                <div class="cartao-corpo">
+                    <div class="cartao-foto-container">${fotoElemento}</div>
+                    <div class="cartao-info">
+                        <p class="nome-aluno"><strong>Nome:</strong> ${aluno.nomeAluno}</p>
+                        <p><strong>Responsável:</strong> ${aluno.responsavel}</p>
+                    </div>
+                </div>
+                <div class="cartao-rodape-base">
+                    <div class="rodape-info-professor">
+                        <strong>Professora:</strong> ${aluno.professora}<br>
+                        <strong>Turma:</strong> ${aluno.turma}
+                    </div>
+                </div>
+                <div class="rodape-logo-flutuante">
+                    <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
+                </div>
+            </div>`;
+        }
+
+        function criarEspacadorHTML() {
+          return `<div class="espacador-quebra-pagina"></div>`;
+        }
+
+        function renderizarCartoes(dadosParaRenderizar) {
+          if (!containerPagina) return;
+
+          let htmlConteudo = "";
+          dadosParaRenderizar.forEach((aluno, index) => {
+            if (index > 0 && index % cartoesPorQuebraVisual === 0) {
+              htmlConteudo += criarEspacadorHTML();
+            }
+            htmlConteudo += criarCartaoHTML(aluno);
+          });
+          containerPagina.innerHTML = htmlConteudo;
+        }
+
+        // Renderiza os cartões com os dados simulados ao carregar a página
+        renderizarCartoes(mockAlunos);
+      });
+    </script>
+  </body>
+</html>

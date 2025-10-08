@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Matriz - Cartões de Funcionários</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --cartao-largura-base: 86mm;
+        --cartao-altura-base: 54mm;
+        --fator-escala-visual: 1.03;
+
+        /* Cores para Cartão de Funcionário */
+        --cor-func-fundo: #fdfdfd; /* Fundo do cartão */
+        --cor-func-cabecalho-fundo: #3351e0; /* Azul, igual ao cartão do aluno */
+        --cor-func-cabecalho-texto: #fff;
+        --cor-func-nome-texto: #2c3e50; /* Cinza escuro */
+        --cor-func-info-texto: #333;
+        --cor-func-barra-fundo: #f1c40f; /* Amarelo, mantido */
+        --cor-borda-corte: #777;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #e4e1d8;
+        padding: 20px 0;
+        font-family: "Nunito Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .pagina-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .pagina {
+        background-color: white;
+        width: 210mm;
+        min-height: 297mm;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-content: flex-start;
+        padding: 12mm;
+        column-gap: calc((210mm - 2 * 12mm - 2 * (var(--cartao-largura-base) * var(--fator-escala-visual))) / 1);
+        row-gap: 15mm;
+        align-items: start;
+        justify-items: center;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          background-color: white;
+          padding: 0;
+          margin: 0;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        .pagina-container {
+          gap: 0;
+        }
+        .pagina {
+          margin: 0;
+          box-shadow: none;
+          width: 210mm;
+          height: auto;
+          min-height: 0;
+          padding: 12mm;
+          overflow: visible !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .espacador-quebra-pagina {
+          height: 0 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+        }
+        .cartao-funcionario {
+          box-shadow: none !important;
+          border: 0.5pt dashed var(--cor-borda-corte) !important;
+        }
+      }
+      .cartao-funcionario {
+        width: var(--cartao-largura-base);
+        height: var(--cartao-altura-base);
+        transform: scale(var(--fator-escala-visual));
+        transform-origin: center center;
+        border-radius: 5mm;
+        border: 0.5pt dashed #aaa;
+        background: var(--cor-func-fundo);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        page-break-inside: avoid !important;
+      }
+      .cartao-funcionario-cabecalho {
+        background-color: var(--cor-func-cabecalho-fundo);
+        padding: 3mm; /* Ajustado para ser igual ao cartão do aluno */
+        color: var(--cor-func-cabecalho-texto);
+        text-align: center;
+        font-size: 9.5pt; /* Ajustado para ser igual ao cartão do aluno */
+        font-weight: 700; /* Ajustado para ser igual ao cartão do aluno */
+        flex-shrink: 0;
+      }
+      .cartao-funcionario-corpo {
+        display: flex;
+        padding: 4mm;
+        flex-grow: 1;
+        align-items: center;
+        justify-content: center;
+        position: relative; /* Para z-index funcionar */
+        z-index: 2; /* Para ficar acima das formas do rodapé */
+      }
+      .cartao-funcionario-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Centraliza a logo horizontalmente */
+        text-align: center; /* Centraliza o texto */
+      }
+      .cartao-funcionario-info .nome {
+        font-size: 14pt; /* Fonte maior para o nome */
+        font-weight: 800;
+        color: var(--cor-func-nome-texto);
+        line-height: 1.2;
+        margin-bottom: 3mm; /* Mais espaço abaixo do nome */
+      }
+      .cartao-funcionario-info .funcao {
+        font-size: 8.5pt;
+        font-weight: 600;
+        color: var(--cor-func-info-texto);
+        line-height: 1.3;
+      }
+      /* Novas formas no rodapé */
+      .cartao-funcionario::before,
+      .cartao-funcionario::after {
+        content: "";
+        position: absolute;
+        bottom: -15mm;
+        left: -25%;
+        width: 150%;
+        height: 30mm;
+        background: #ffeab6;
+        transform: rotate(-8deg);
+        z-index: 0;
+      }
+      .cartao-funcionario::after {
+        background: #9dd49d;
+        transform: rotate(-12deg);
+        bottom: -20mm;
+        opacity: 0.9;
+      }
+      .rodape-logo-flutuante {
+        margin-top: 5mm;
+      }
+
+      .rodape-logo-flutuante img {
+        max-width: 20mm;
+        height: auto;
+        display: block;
+        /* Adiciona um leve sombreamento para destacar a logo */
+        filter: drop-shadow(0px 1px 1px rgba(0, 0, 0, 0.4));
+      }
+      .espacador-quebra-pagina {
+        grid-column: 1 / -1;
+        height: 1px;
+        page-break-before: always !important;
+      }
+      .controles-pagina {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 5px;
+        border-radius: 5px;
+      }
+      .controles-pagina button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        background-color: #6c757d;
+        color: white;
+      }
+      .controles-pagina button:hover {
+        background-color: #5a6268;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="controles-pagina no-print">
+      <button onclick="window.print()">Imprimir Cartões</button>
+    </div>
+
+    <div class="pagina-container">
+      <div class="pagina" id="paginaFuncionarios">
+        <!-- Os cartões serão inseridos aqui pelo JavaScript -->
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const containerPagina = document.getElementById("paginaFuncionarios");
+        const cartoesPorQuebraVisual = 8;
+
+        // Dados simulados de funcionários
+        const mockFuncionarios = [
+          { nome: "Ana Lídia N. M. Costa", funcao: "Professora - 1º Ano Matutino" },
+          { nome: "Raimunda S. C. Machado", funcao: "Professora - 1º Ano Vespertino" },
+          { nome: "Iranilde Abreu F. Melo", funcao: "Professora - Creche III Matutino" },
+          { nome: "Vanessa da Silva Machado", funcao: "Professora - Creche III Vespertino" },
+          { nome: "Ruthiane Gomes Abreu", funcao: "Professora - Infantil I Matutino" },
+          { nome: "Linda Karla Sodré Feitosa", funcao: "Professora - Infantil I Vespertino" },
+          { nome: "Carita Cristina P. C. Gomes", funcao: "Professora - Infantil II Matutino" },
+          { nome: "Elem Carvalho A. Ribeiro", funcao: "Professora - Infantil II Vespertino" },
+          { nome: "Maria Páscoa da Silva", funcao: "Apoio Pedagógico" },
+          { nome: "Katiane T. Santos de Sousa", funcao: "Apoio Pedagógico" },
+        ];
+
+        function criarCartaoFuncionarioHTML(funcionario) {
+          return `
+            <div class="cartao-funcionario">
+                <div class="cartao-funcionario-cabecalho">E. M. ANA MARIA CORDEIRO DE SOUSA</div>
+                <div class="cartao-funcionario-corpo">
+                    <div class="cartao-funcionario-info">
+                        <p class="nome">${funcionario.nome}</p>
+                        <p class="funcao">${funcionario.funcao}</p>
+                        <div class="rodape-logo-flutuante">
+                            <img src="https://pacodolumiar.ma.gov.br/arquivos/configuracoes/86bfa18c3616088b24ee52b24b33d51a/aef0d4a8297fc12777cc95a3ad78af0b/440cc1f96e03f6072322fbf77dfc9deb-a26a684286b3b4c78516f1399fe5cdef.png" alt="Logo Prefeitura">
+                        </div>
+                    </div>
+                </div>
+                <!-- A logo foi re-adicionada ao corpo para garantir que fique acima das formas de fundo -->
+                <!-- As formas diagonais são criadas com ::before e ::after no .cartao-funcionario -->
+            </div>`;
+        }
+
+        function criarEspacadorHTML() {
+          return `<div class="espacador-quebra-pagina"></div>`;
+        }
+
+        function renderizarCartoes(dadosParaRenderizar) {
+          if (!containerPagina) return;
+
+          let htmlConteudo = "";
+          dadosParaRenderizar.forEach((func, index) => {
+            if (index > 0 && index % cartoesPorQuebraVisual === 0) {
+              htmlConteudo += criarEspacadorHTML();
+            }
+            if (func.funcao.includes("Vespertino") || true) {
+              htmlConteudo += criarCartaoFuncionarioHTML(func);
+            }
+          });
+          containerPagina.innerHTML = htmlConteudo;
+        }
+
+        // Renderiza os cartões com os dados simulados ao carregar a página
+        renderizarCartoes(mockFuncionarios);
+      });
+    </script>
+  </body>
+</html>
