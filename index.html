@@ -525,7 +525,15 @@
 
         // Event listener para os checkboxes individuais de alunos
         listaAlunosSelecao.addEventListener("change", (event) => {
-          if (event.target.classList.contains("aluno-checkbox")) atualizarExibicao();
+          if (event.target.classList.contains("aluno-checkbox")) {
+            const studentId = event.target.value;
+            if (event.target.checked) {
+              selectedStudentIds.add(studentId);
+            } else {
+              selectedStudentIds.delete(studentId);
+            }
+            atualizarExibicao();
+          }
         });
 
         if (btnLimparDados) {
